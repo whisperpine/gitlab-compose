@@ -1,0 +1,4 @@
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+# minute hour mday month wday who command
+0 3 1,16 * * root gitlab-backup create CRON=1
+0 2 1,16 * * root gitlab-ctl backup-etc --delete-old-backups

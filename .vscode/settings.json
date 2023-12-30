@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "backup-cron": "crontab",
+        "**/*.env": "ini",
+    },
+    "files.readonlyInclude": {}
+}

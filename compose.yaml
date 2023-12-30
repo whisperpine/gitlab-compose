@@ -1,0 +1,44 @@
+services:
+
+  cloudflared:
+    image: cloudflare/cloudflared
+    # pull_policy: always
+    restart: always
+    networks:
+      cloudflared:
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
+
+  gitlab:
+    image: gitlab/gitlab-ee
+    # pull_policy: always
+    restart: always
+    shm_size: 256m
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      # Cron file used to backup gitlab periodically
+      - ./backup-cron:/etc/cron.d/backup-cron:ro
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
+    networks:
+      cloudflared:
+      macvlan:
+        ipv4_address: ${GITLAB_IPV4_ADDRESS}
+    environment:
+      # Override /etc/gitlab/gitlab.rb
+      - GITLAB_OMNIBUS_CONFIG=${GITLAB_OMNIBUS_CONFIG}
+
+networks:
+  cloudflared:
+  macvlan:
+    driver: macvlan
+    name: macvlan
+    external: true
+
+volumes:
+  gitlab-data:
+    name: gitlab-data
+  gitlab-logs:
+    name: gitlab-logs
+  gitlab-config:
+    name: gitlab-config
