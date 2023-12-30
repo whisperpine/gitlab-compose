@@ -2,7 +2,6 @@ services:
 
   cloudflared:
     image: cloudflare/cloudflared
-    # pull_policy: always
     restart: always
     networks:
       cloudflared:
@@ -10,7 +9,6 @@ services:
 
   gitlab:
     image: gitlab/gitlab-ee
-    # pull_policy: always
     restart: always
     shm_size: 256m
     volumes:
@@ -26,13 +24,57 @@ services:
         ipv4_address: ${GITLAB_IPV4_ADDRESS}
     environment:
       # Override /etc/gitlab/gitlab.rb
-      - GITLAB_OMNIBUS_CONFIG=${GITLAB_OMNIBUS_CONFIG}
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url '${EXTERNAL_URL}'
+
+        ## Disbale prometheus to reduce memory usage.
+        prometheus_monitoring['enable'] = false
+
+        ## Disable the following features when create a new repository.
+        gitlab_rails['gitlab_default_projects_features_snippets'] = false
+        gitlab_rails['gitlab_default_projects_features_container_registry'] = false
+
+        ### Email configs.
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = '${SMTP_ADDRESS}'
+        gitlab_rails['smtp_port'] = 465
+        gitlab_rails['smtp_user_name'] = '${SMTP_USER_NAME}'
+        gitlab_rails['smtp_password'] = '${SMTP_PASSWORD}'
+        gitlab_rails['smtp_domain'] = '${SMTP_DOMAIN}'
+        gitlab_rails['smtp_authentication'] = 'login'
+        gitlab_rails['smtp_enable_starttls_auto'] = false
+        gitlab_rails['smtp_tls'] = true
+        gitlab_rails['gitlab_email_from'] = '${GITLAB_EMAIL_FROM}'
+        gitlab_rails['gitlab_email_display_name'] = 'GitLab'
+        gitlab_rails['gitlab_email_reply_to'] = '${GITLAB_EMAIL_REPLY_TO}'
+
+        ### Backup Configs.
+        ## The duration in seconds to keep backups.
+        ## 604800 is meant to be 30 days.
+        gitlab_rails['backup_keep_time'] = 2592000
+        ## Consider using multipart uploads when file size reaches 100MB.
+        ## Enter a number in bytes.
+        gitlab_rails['backup_multipart_chunk_size'] = 104857600
+        ## Skip parts of the backup. Comma separated.
+        gitlab_rails['env'] = {
+          # Types which will be skipped by backup process.
+          'SKIP' => 'builds,artifacts,registry,pages'
+        }
+        ## Bucket name
+        gitlab_rails['backup_upload_remote_directory'] = '${BACKUP_UPLOAD_REMOTE_DIRECTORY}'
+        ## Bucket metadata
+        gitlab_rails['backup_upload_connection'] = {
+          'provider' => '${BACKUP_PROVIDER}',
+          'region' => '${BACKUP_REGION}',
+          'aws_access_key_id' => '${BACKUP_AWS_ACCESS_KEY_ID}',
+          'aws_secret_access_key' => '${BACKUP_AWS_SECRET_ACCESS_KEY}'
+        }
 
 networks:
   cloudflared:
   macvlan:
     driver: macvlan
-    name: macvlan
+    name: ${MACVLAN_NETWORK_NAME}
     external: true
 
 volumes:

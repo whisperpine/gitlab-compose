@@ -1,3 +1,6 @@
 * text=auto eol=lf
 
+gitlab.rb linguist-detectable=false
+
 *.yaml linguist-detectable=true
+*.env linguist-detectable=true
