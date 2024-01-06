@@ -2,7 +2,6 @@ services:
 
   cloudflared:
     image: cloudflare/cloudflared
-    # pull_policy: always
     restart: always
     networks:
       cloudflared:
@@ -10,7 +9,6 @@ services:
 
   gitlab:
     image: gitlab/gitlab-ee
-    # pull_policy: always
     restart: always
     shm_size: 256m
     volumes:
@@ -76,7 +74,7 @@ networks:
   cloudflared:
   macvlan:
     driver: macvlan
-    name: macvlan
+    name: ${MACVLAN_NETWORK_NAME}
     external: true
 
 volumes:
