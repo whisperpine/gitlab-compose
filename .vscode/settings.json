@@ -3,5 +3,7 @@
         "backup-cron": "crontab",
         "**/*.env": "ini",
     },
-    "files.readonlyInclude": {}
+    "files.readonlyInclude": {
+        "gitlab.rb": true
+    }
 }
