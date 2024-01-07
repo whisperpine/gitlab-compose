@@ -26,13 +26,13 @@ services:
       # Override /etc/gitlab/gitlab.rb
       GITLAB_OMNIBUS_CONFIG: |
         external_url '${EXTERNAL_URL}'
+        registry_external_url '${REGISTRY_EXTERNAL_URL}'
 
         ## Disbale prometheus to reduce memory usage.
         prometheus_monitoring['enable'] = false
 
         ## Disable the following features when create a new repository.
         gitlab_rails['gitlab_default_projects_features_snippets'] = false
-        gitlab_rails['gitlab_default_projects_features_container_registry'] = false
 
         ### Email configs.
         gitlab_rails['smtp_enable'] = true
