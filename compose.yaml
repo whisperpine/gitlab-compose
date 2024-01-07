@@ -31,10 +31,8 @@ services:
         ## Disbale prometheus to reduce memory usage.
         prometheus_monitoring['enable'] = false
 
-
         ## Disable the following features when create a new repository.
         gitlab_rails['gitlab_default_projects_features_snippets'] = false
-        gitlab_rails['gitlab_default_projects_features_container_registry'] = false
 
         ### Email configs.
         gitlab_rails['smtp_enable'] = true
