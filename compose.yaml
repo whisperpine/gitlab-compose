@@ -58,7 +58,7 @@ services:
         ## Skip parts of the backup. Comma separated.
         gitlab_rails['env'] = {
           # Types which will be skipped by backup process.
-          'SKIP' => 'builds,artifacts,registry,pages'
+          'SKIP' => 'builds,artifacts,pages'
         }
         ## Bucket name
         gitlab_rails['backup_upload_remote_directory'] = '${BACKUP_UPLOAD_REMOTE_DIRECTORY}'
