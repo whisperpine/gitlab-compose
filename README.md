@@ -12,7 +12,8 @@ with the [macvlan](https://docs.docker.com/network/drivers/macvlan/) driver type
 
 ## Cloudflare Tunnels
 
-Both the gitlab hostname and container registry hostname should target at `https://gitlab`.
+All the hostnames should target at `https://gitlab`,
+including gitlab, container registry and mattermost.
 
 Enable **No TLS Verify** in public hostname configs, if **https** is used in EXTERNAL_URL.\
 Because the server-side tls cert is managed by gitlab-integrated service, not provided by Cloudflare.

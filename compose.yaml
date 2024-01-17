@@ -27,6 +27,7 @@ services:
       GITLAB_OMNIBUS_CONFIG: |
         external_url '${EXTERNAL_URL}'
         registry_external_url '${REGISTRY_EXTERNAL_URL}'
+        # mattermost_external_url '${MATTERMOST_EXTERNAL_URL}'
 
         ## Disbale prometheus to reduce memory usage.
         prometheus_monitoring['enable'] = false
