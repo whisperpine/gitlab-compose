@@ -9,6 +9,7 @@ services:
 
   gitlab:
     image: gitlab/gitlab-ee
+    container_name: gitlab
     restart: always
     shm_size: 256m
     volumes:
@@ -23,6 +24,10 @@ services:
       macvlan:
         ipv4_address: ${GITLAB_IPV4_ADDRESS}
     environment:
+      # The script in GITLAB_POST_RECONFIGURE_SCRIPT
+      # is automatically executed on startup
+      GITLAB_POST_RECONFIGURE_SCRIPT: |
+        go-crond "/etc/cron.d/backup-cron" &
       # Override /etc/gitlab/gitlab.rb
       GITLAB_OMNIBUS_CONFIG: |
         external_url '${EXTERNAL_URL}'
