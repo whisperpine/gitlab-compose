@@ -1,10 +1,12 @@
 {
     "files.associations": {
         "backup-cron": "crontab",
+        "LICENSE": "plaintext",
         "**/*.env": "ini",
     },
     "files.readonlyInclude": {
-        "gitlab.rb": true
+        "gitlab.rb": true,
+        "LICENSE": true
     },
     "cSpell.words": [
         "macvlan"
