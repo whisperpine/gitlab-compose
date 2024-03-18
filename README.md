@@ -17,3 +17,15 @@ including gitlab, container registry and mattermost.
 
 Enable **No TLS Verify** in public hostname configs, if **https** is used in EXTERNAL_URL.\
 Because the server-side tls cert is managed by gitlab-integrated service, not provided by Cloudflare.
+
+## Troubleshoot
+
+### SSH does not work
+
+```sh
+docker compose exec -it gitlab bash
+service ssh restart
+
+# Or use this one-line command.
+docker-compose exec gitlab service ssh restart
+```
