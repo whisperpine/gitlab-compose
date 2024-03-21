@@ -1,0 +1,12 @@
+# use this file as a command line tool.
+
+# for exmaple:
+# docker compose run terraform -h
+
+services:
+  terraform:
+    image: hashicorp/terraform
+    command: ["--version"]
+    working_dir: /infra
+    volumes:
+      - .:/infra

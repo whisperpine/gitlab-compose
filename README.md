@@ -12,20 +12,8 @@ with the [macvlan](https://docs.docker.com/network/drivers/macvlan/) driver type
 
 ## Cloudflare Tunnels
 
-All the hostnames should target at `https://gitlab`,
-including gitlab, container registry and mattermost.
+[Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
+provides a secure way to host without a publicly IP address.\
+It's recommended to set up infrastructures like Cloudflare Tunnel by [Terraform](https://www.terraform.io/).
 
-Enable **No TLS Verify** in public hostname configs, if **https** is used in EXTERNAL_URL.\
-Because the server-side tls cert is managed by gitlab-integrated service, not provided by Cloudflare.
-
-## Troubleshoot
-
-### SSH does not work
-
-```sh
-docker compose exec -it gitlab bash
-service ssh restart
-
-# Or use this one-line command.
-docker-compose exec gitlab service ssh restart
-```
+Read more in [terraform/README.md](./terraform/README.md).
