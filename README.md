@@ -4,7 +4,7 @@ Deploy [GitLab](https://about.gitlab.com/) in your office and access it anywhere
 
 ## File Notes
 
-[gitlab.rb](./gitlab.rb) is directly copied from */etc/gitlab/gitlab.rb* (version v16.7.0-ee), which is just a reference.\
+[gitlab.rb](./gitlab.rb) is duplicated from */etc/gitlab/gitlab.rb* (version v16.7.0-ee), which may be a handy reference.\
 [setup-network.sh](./setup-network.sh) demonstrates how to create a docker network
 with the [macvlan](https://docs.docker.com/network/drivers/macvlan/) driver type.\
 [template.env](./template.env) is a template which is expected to be copied as
@@ -12,20 +12,8 @@ with the [macvlan](https://docs.docker.com/network/drivers/macvlan/) driver type
 
 ## Cloudflare Tunnels
 
-All the hostnames should target at `https://gitlab`,
-including gitlab, container registry and mattermost.
+[Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
+provides a secure way to host without a public IP address.\
+It's recommended to set up infrastructures like Cloudflare Tunnel by [Terraform](https://www.terraform.io/).
 
-Enable **No TLS Verify** in public hostname configs, if **https** is used in EXTERNAL_URL.\
-Because the server-side tls cert is managed by gitlab-integrated service, not provided by Cloudflare.
-
-## Troubleshoot
-
-### SSH does not work
-
-```sh
-docker compose exec -it gitlab bash
-service ssh restart
-
-# Or use this one-line command.
-docker-compose exec gitlab service ssh restart
-```
+Read more in [terraform/README.md](./terraform/README.md).
