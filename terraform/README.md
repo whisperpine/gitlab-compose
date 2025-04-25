@@ -6,17 +6,18 @@ Setup Cloudflare Tunnel by Terraform.
 
 - A domain hosted by Cloudflare DNS.
 - An organization on Cloudflare Zero Trust.
+- Terraform is installed (`terraform` command is available).
 
 ## Get Started
 
-Create an API Token with [proper permissions](#api-token).\
-Configure variables in `terraform.tfvars` file (create if missing).\
-Run the following commands:
+- Create an API Token with [proper permissions](#api-token).
+- Configure variables in `terraform.tfvars` file (create if missing).
+- Run the following commands:
 
 ```sh
 cd [terraform-dir]
-docker compose run terraform init
-docker compose run terraform apply -auto-approve
+terraform init
+terraform apply -auto-approve
 ```
 
 ## API Token
@@ -35,7 +36,7 @@ Run the following command to get tunnel token:
 
 ```sh
 cd [terraform-dir]
-docker compose run terraform output tunnel_token
+terraform output tunnel_token
 ```
 
 Tunnel Token should be assigned to `CLOUDFLARED_TOKEN` in `.env` file.
@@ -45,8 +46,9 @@ Tunnel Token should be assigned to `CLOUDFLARED_TOKEN` in `.env` file.
 All the hostnames should target at `https://gitlab`,
 including gitlab and container registry.
 
-Enable **No TLS Verify** in public hostname configs, if **https** is used in EXTERNAL_URL.\
-Because the server-side tls cert is managed by gitlab-integrated service, not provided by Cloudflare.
+Enable *No TLS Verify* in public hostname configs, if *https* is used in `EXTERNAL_URL`.\
+Because the server-side TLS cert is managed by gitlab-integrated service,
+not provided by Cloudflare.
 
 ## References
 
