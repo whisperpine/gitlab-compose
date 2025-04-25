@@ -4,6 +4,11 @@ variable "cloudflare_token" {
   sensitive   = true
 }
 
+variable "cloudflare_zone" {
+  description = "Zone is the domain (e.g. example.com)"
+  type        = string
+}
+
 variable "cloudflare_zone_id" {
   description = "Zone ID for your domain"
   type        = string
