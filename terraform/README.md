@@ -6,7 +6,10 @@ Setup Cloudflare Tunnel by Terraform.
 
 - A domain hosted by Cloudflare DNS.
 - An organization on Cloudflare Zero Trust.
-- Terraform is installed (`terraform` command is available).
+- Terraform of [OpenTofu](https://opentofu.org/) is installed
+(`terraform` or `tofu` command is available).\
+If OpenTofu is used, substitute `tofu` for
+`terraform` in the commands hereafter.
 
 ## Get Started
 
@@ -52,6 +55,6 @@ not provided by Cloudflare.
 
 ## References
 
-- [Deploy Tunnels with Terraform - Cloudflare Docs](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/deploy-tunnels/deployment-guides/terraform/)
-- [Cloudflare Terraform - Cloudflare Docs](https://developers.cloudflare.com/terraform/)
-- [Cloudflare Provider - Terraform Registry](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs)
+- [Cloudflare Terraform - Cloudflare Docs](https://developers.cloudflare.com/terraform/).
+- [Deploy Tunnels with Terraform - Cloudflare Docs](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/deployment-guides/terraform/).
+- [Cloudflare Provider - Terraform Registry](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs).

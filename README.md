@@ -48,3 +48,7 @@ Feature.remove(:example_feature)
 
 </details>
 <!-- markdownlint-enable MD033 -->
+
+## Admin Settings
+
+Disable [event data tracking](https://docs.gitlab.com/administration/settings/event_data/).
