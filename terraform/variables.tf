@@ -31,6 +31,6 @@ variable "dns_record_prefix_gitlab" {
 }
 
 variable "dns_record_prefix_registry" {
-  description = "The dns record prefix for container regsitry"
+  description = "The dns record prefix for container registry"
   type        = string
 }
