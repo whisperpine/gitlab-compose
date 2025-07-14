@@ -4,8 +4,8 @@ Deploy [GitLab](https://about.gitlab.com/) in your office and access it anywhere
 
 ## File Notes
 
-- [gitlab.rb](./gitlab.rb) is duplicated from */etc/gitlab/gitlab.rb*
-(version v16.7.0-ee), which may be a handy reference.
+- [gitlab.rb](./gitlab.rb) is duplicated from */opt/gitlab/etc/gitlab.rb.template*
+(version v18.1.2-ee), which may be a handy reference.
 - [setup-network.sh](./setup-network.sh) demonstrates how to create a docker network
 with the [macvlan](https://docs.docker.com/network/drivers/macvlan/) driver type.
 - [example.env](./example.env) is a template which is expected to be copied as
@@ -35,7 +35,7 @@ sudo gitlab-rails console
 <!-- markdownlint-disable MD033 -->
 <details><summary>Commonly used commands in gitlab-rails console</summary>
 
-```rb
+```ruby
 # enable "example_feature" feature flag.
 Feature.enable(:example_feature)
 # check if "example_feature" is enabled.

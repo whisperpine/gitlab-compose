@@ -34,8 +34,21 @@
 ## Roles for multi-instance GitLab
 ##! The default is to have no roles enabled, which results in GitLab running as an all-in-one instance.
 ##! Options:
-##!   redis_sentinel_role redis_master_role redis_replica_role geo_primary_role geo_secondary_role
-##!   postgres_role consul_role application_role monitoring_role
+##!   application_role
+##!   redis_sentinel_role
+##!   redis_master_role
+##!   redis_replica_role
+##!   monitoring_role
+##!   geo_primary_role
+##!   geo_secondary_role
+##!   postgres_role
+##!   patroni_role
+##!   consul_role
+##!   pgbouncer_role
+##!   pages_role
+##!   sidekiq_role
+##!   spamcheck_role
+##!   gitaly_role
 ##! For more details on each role, see:
 ##! https://docs.gitlab.com/omnibus/roles/index.html#roles
 ##!
@@ -63,6 +76,8 @@
 ## gitlab.yml configuration
 ##! Docs: https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/gitlab.yml.md
 ################################################################################
+# gitlab_rails['enable'] = true # do not disable unless explicitly told to do so in docs
+
 # gitlab_rails['gitlab_ssh_host'] = 'ssh.host_example.com'
 # gitlab_rails['gitlab_ssh_user'] = ''
 # gitlab_rails['time_zone'] = 'UTC'
@@ -104,8 +119,8 @@
 
 # gitlab_rails['gitlab_email_enabled'] = true
 
-##! If your SMTP server does not like the default 'From: gitlab@gitlab.example.com'
-##! can change the 'From' with this setting.
+###! If your SMTP server does not like the default 'From: gitlab@gitlab.example.com'
+###! can change the 'From' with this setting.
 # gitlab_rails['gitlab_email_from'] = 'example@example.com'
 # gitlab_rails['gitlab_email_display_name'] = 'Example'
 # gitlab_rails['gitlab_email_reply_to'] = 'noreply@example.com'
@@ -119,18 +134,33 @@
 # gitlab_rails['gitlab_username_changing_enabled'] = true
 
 ### Default Theme
-### Available values:
-##! `1`  for Indigo
-##! `2`  for Dark
-##! `3`  for Light
-##! `4`  for Blue
-##! `5`  for Green
-##! `6`  for Light Indigo
-##! `7`  for Light Blue
-##! `8`  for Light Green
-##! `9`  for Red
-##! `10` for Light Red
+###! Available values:
+###! `1`  for Indigo
+###! `2`  for Dark
+###! `3`  for Light
+###! `4`  for Blue
+###! `5`  for Green
+###! `6`  for Light Indigo
+###! `7`  for Light Blue
+###! `8`  for Light Green
+###! `9`  for Red
+###! `10` for Light Red
 # gitlab_rails['gitlab_default_theme'] = 2
+
+### Default Color Mode
+### Available values:
+##! `1`  for Light mode
+##! `2`  for Dark mode
+##! `3`  for Auto (follow system preferences)
+# gitlab_rails['gitlab_default_color_mode'] = 1
+
+### Custom html header tags
+###! See https://docs.gitlab.com/ee/administration/custom_html_header_tags.html for more
+###! In some cases some custom header tags are needed
+###! e.g., to add the EU cookie consent
+###! Tip: you must add the externals source to the content_security_policy as
+###!      well, typically the script_src and style_src.
+# gitlab_rails['custom_html_header_tags'] = nil
 
 ### Default project feature settings
 # gitlab_rails['gitlab_default_projects_features_issues'] = true
@@ -141,14 +171,14 @@
 # gitlab_rails['gitlab_default_projects_features_container_registry'] = true
 
 ### Automatic issue closing
-###! See https://docs.gitlab.com/ee/customization/issue_closing.html for more
+###! See https://docs.gitlab.com/ee/administration/issue_closing_pattern.html for more
 ###! information about this pattern.
 # gitlab_rails['gitlab_issue_closing_pattern'] = "\b((?:[Cc]los(?:e[sd]?|ing)|\b[Ff]ix(?:e[sd]|ing)?|\b[Rr]esolv(?:e[sd]?|ing)|\b[Ii]mplement(?:s|ed|ing)?)(:?) +(?:(?:issues? +)?%{issue_ref}(?:(?:, *| +and +)?)|([A-Z][A-Z0-9_]+-\d+))+)"
 
 ### Download location
 ###! When a user clicks e.g. 'Download zip' on a project, a temporary zip file
 ###! is created in the following directory.
-###! Should not be the same path, or a sub directory of any of the `git_data_dirs`
+###! Should not be the same path, or a sub directory of any of the `gitaly['configuration'].storage` paths.
 # gitlab_rails['gitlab_repository_downloads_path'] = 'tmp/repositories'
 
 ### Gravatar Settings
@@ -163,7 +193,7 @@
 # gitlab_rails['stuck_ci_jobs_worker_cron'] = "0 0 * * *"
 # gitlab_rails['expire_build_artifacts_worker_cron'] = "*/7 * * * *"
 # gitlab_rails['environments_auto_stop_cron_worker_cron'] = "24 * * * *"
-# gitlab_rails['pipeline_schedule_worker_cron'] = "19 * * * *"
+# gitlab_rails['pipeline_schedule_worker_cron'] = "3-59/10 * * * *"
 # gitlab_rails['ci_archive_traces_cron_worker_cron'] = "17 * * * *"
 # gitlab_rails['repository_check_worker_cron'] = "20 * * * *"
 # gitlab_rails['admin_email_worker_cron'] = "0 0 * * 0"
@@ -185,11 +215,19 @@
 # gitlab_rails['loose_foreign_keys_cleanup_worker_cron'] = "*/5 * * * *"
 # gitlab_rails['ci_runner_versions_reconciliation_worker_cron'] = "@daily"
 # gitlab_rails['ci_runners_stale_machines_cleanup_worker_cron'] = "36 * * * *"
+# gitlab_rails['ci_catalog_resources_process_sync_events_worker_cron'] = "*/1 * * * *"
+# gitlab_rails['ci_click_house_finished_pipelines_sync_worker_cron'] = "*/4 * * * *"
+# gitlab_rails['ci_click_house_finished_pipelines_sync_worker_args'] = [1]
 
 ### Webhook Settings
 ###! Number of seconds to wait for HTTP response after sending webhook HTTP POST
 ###! request (default: 10)
 # gitlab_rails['webhook_timeout'] = 10
+
+### HTTP client settings
+###! This is for setting up the mutual TLS client cert and password for the certificate file.
+# gitlab_rails['http_client']['tls_client_cert_file'] = nil
+# gitlab_rails['http_client']['tls_client_cert_password'] = nil
 
 ### GraphQL Settings
 ###! Tells the rails application how long it has to complete a GraphQL request.
@@ -205,13 +243,15 @@
 # gitlab_rails['trusted_proxies'] = []
 
 ### Content Security Policy
-####! Customize if you want to enable the Content-Security-Policy header, which
-####! can help thwart JavaScript cross-site scripting (XSS) attacks.
-####! See: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+###! Customize if you want to enable the Content-Security-Policy header, which
+###! can help thwart JavaScript cross-site scripting (XSS) attacks.
+###! See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP
 # gitlab_rails['content_security_policy'] = {
 #  'enabled' => false,
 #  'report_only' => false,
 #  # Each directive is a String (e.g. "'self'").
+#  # This section only needs to be set if you need custom CSP directives
+#  # See https://docs.gitlab.com/omnibus/settings/configuration.html#set-a-content-security-policy
 #  'directives' => {
 #    'base_uri' => nil,
 #    'child_src' => nil,
@@ -241,6 +281,11 @@
 ###! IP whitelist controlling access to monitoring endpoints
 # gitlab_rails['monitoring_whitelist'] = ['127.0.0.0/8', '::1/128']
 
+### Session settings
+
+# gitlab_rails['signed_cookie_salt'] = 'signed cookie'
+# gitlab_rails['authenticated_encrypted_cookie_salt'] = 'authenticated encrypted cookie'
+
 ### Shutdown settings
 ###! Defines an interval to block healthcheck,
 ###! but continue accepting application requests.
@@ -258,17 +303,19 @@
 # gitlab_rails['microsoft_graph_mailer_azure_ad_endpoint'] = "https://login.microsoftonline.com"
 # gitlab_rails['microsoft_graph_mailer_graph_endpoint'] = "https://graph.microsoft.com"
 
-### Reply by email
+################################################################
+## Reply by email
+################################################################
 ###! Allow users to comment on issues and merge requests by replying to
 ###! notification emails.
 ###! Docs: https://docs.gitlab.com/ee/administration/reply_by_email.html
 # gitlab_rails['incoming_email_enabled'] = true
 
-#### Incoming Email Address
-####! The email address including the `%{key}` placeholder that will be replaced
-####! to reference the item being replied to.
-####! **The placeholder can be omitted but if present, it must appear in the
-####!   "user" part of the address (before the `@`).**
+### Incoming Email Address
+###! The email address including the `%{key}` placeholder that will be replaced
+###! to reference the item being replied to.
+###! **The placeholder can be omitted but if present, it must appear in the
+###!   "user" part of the address (before the `@`).**
 # gitlab_rails['incoming_email_address'] = "gitlab-incoming+%{key}@gmail.com"
 
 #### Email account username
@@ -310,12 +357,12 @@
 #    'poll_interval': 60  # Optional
 # }
 
-#### How incoming emails are delivered to Rails process. Accept either sidekiq
-#### or webhook. The default config is webhook.
+####! How incoming emails are delivered to Rails process. Accept either sidekiq
+####! or webhook. The default config is webhook.
 # gitlab_rails['incoming_email_delivery_method'] = "webhook"
 
-#### Token to authenticate webhook requests. The token must be exactly 32 bytes,
-#### encoded with base64
+####! Token to authenticate webhook requests. The token must be exactly 32 bytes,
+####! encoded with base64
 # gitlab_rails['incoming_email_auth_token'] = nil
 
 ####! The format of mail_room crash logs
@@ -351,8 +398,8 @@
 ### Job Artifacts
 # gitlab_rails['artifacts_enabled'] = true
 # gitlab_rails['artifacts_path'] = "/var/opt/gitlab/gitlab-rails/shared/artifacts"
-####! Job artifacts Object Store
-####! Docs: https://docs.gitlab.com/ee/administration/job_artifacts.html#using-object-storage
+###! Job artifacts Object Store
+###! Docs: https://docs.gitlab.com/ee/administration/job_artifacts.html#using-object-storage
 # gitlab_rails['artifacts_object_store_enabled'] = false
 # gitlab_rails['artifacts_object_store_proxy_download'] = false
 # gitlab_rails['artifacts_object_store_remote_directory'] = "artifacts"
@@ -444,7 +491,7 @@
 # }
 
 ### CI Secure Files
-# gitlab_rails['ci_secure_files_enabled'] = false
+# gitlab_rails['ci_secure_files_enabled'] = true
 # gitlab_rails['ci_secure_files_storage_path'] = "/var/opt/gitlab/gitlab-rails/shared/ci_secure_files"
 # gitlab_rails['ci_secure_files_object_store_enabled'] = false
 # gitlab_rails['ci_secure_files_object_store_remote_directory'] = "ci-secure-files"
@@ -515,6 +562,8 @@
 #     verify_certificates: true
 #     smartcard_auth: false
 #     active_directory: true
+#     smartcard_ad_cert_field: 'altSecurityIdentities'
+#     smartcard_ad_cert_format: null # 'issuer_and_serial_number', 'issuer_and_subject' , 'principal_name'
 #     allow_username_or_email_login: false
 #     lowercase_usernames: false
 #     block_auto_created_users: false
@@ -536,6 +585,8 @@
 #     verify_certificates: true
 #     smartcard_auth: false
 #     active_directory: true
+#     smartcard_ad_cert_field: 'altSecurityIdentities'
+#     smartcard_ad_cert_format: null # 'issuer_and_serial_number', 'issuer_and_subject' , 'principal_name'
 #     allow_username_or_email_login: false
 #     lowercase_usernames: false
 #     block_auto_created_users: false
@@ -581,6 +632,16 @@
 # gitlab_rails['omniauth_cas3_session_duration'] = 28800
 # gitlab_rails['omniauth_saml_message_max_byte_size'] = 250000
 
+### OIDC settings
+# Configure a custom duration for ID Tokens (defaults to 120 seconds).
+#! Docs: https://docs.gitlab.com/administration/auth/oidc/?tab=Linux+package+%28Omnibus%29#configure-a-custom-duration-for-id-tokens
+# gitlab_rails['oidc_provider_openid_id_token_expire_in_seconds'] = 120
+
+
+### JWT ID Token settings
+# Configure a custom issuer url for CI JWT ID tokens
+# gitlab_rails['ci_id_tokens_issuer_url'] = https://example-oidc-configuration-bucket.s3.eu-north-1.amazonaws.com
+
 ### FortiAuthenticator authentication settings
 # gitlab_rails['forti_authenticator_enabled'] = false
 # gitlab_rails['forti_authenticator_host'] = 'forti_authenticator.example.com'
@@ -606,7 +667,7 @@
 # gitlab_rails['backup_path'] = "/var/opt/gitlab/backups"
 # gitlab_rails['backup_gitaly_backup_path'] = "/opt/gitlab/embedded/bin/gitaly-backup"
 
-###! Docs: https://docs.gitlab.com/ee/raketasks/backup_restore.html#backup-archive-permissions
+###! Docs: https://docs.gitlab.com/ee/administration/backup_restore/backup_gitlab.html#backup-archive-permissions
 # gitlab_rails['backup_archive_permissions'] = 0644
 
 # gitlab_rails['backup_pg_schema'] = 'public'
@@ -644,23 +705,19 @@
 # gitlab_rails['backup_storage_class'] = 'STANDARD'
 
 ###! Skip parts of the backup. Comma separated.
-###! Docs: https://docs.gitlab.com/ee/raketasks/backup_restore.html#excluding-specific-directories-from-the-backup
+###! Docs: https://docs.gitlab.com/ee/administration/backup_restore/backup_gitlab.html#excluding-specific-data-from-the-backup
 #gitlab_rails['env'] = {
 #    "SKIP" => "db,uploads,repositories,builds,artifacts,lfs,registry,pages"
 #}
 
-### For setting up different data storing directory
-###! Docs: https://docs.gitlab.com/omnibus/settings/configuration.html#store-git-data-in-an-alternative-directory
-###! **If you want to use a single non-default directory to store git data use a
-###!   path that doesn't contain symlinks.**
-# git_data_dirs({
-#   "default" => {
-#     "path" => "/mnt/nfs-01/git-data"
-#    }
-# })
-
 ### Gitaly settings
 # gitlab_rails['gitaly_token'] = 'secret token'
+# gitlab_rails['repositories_storages'] = {
+#   'default' => {
+#     'gitaly_address' => 'tcp://praefect-lb:2305',
+#     'gitaly_token' => 'secret_token'
+#   }
+# }
 
 ### For storing GitLab application uploads, eg. LFS objects, build artifacts
 ###! Docs: https://docs.gitlab.com/ee/development/shared_files.html
@@ -671,7 +728,7 @@
 # gitlab_rails['encrypted_settings_path'] = '/var/opt/gitlab/gitlab-rails/shared/encrypted_settings'
 
 ### Wait for file system to be mounted
-###! Docs: https://docs.gitlab.com/omnibus/settings/configuration.html#only-start-omnibus-gitlab-services-after-a-given-file-system-is-mounted
+###! Docs: https://docs.gitlab.com/omnibus/settings/configuration.html#start-linux-package-installation-services-only-after-a-given-file-system-is-mounted
 # high_availability['mountpoint'] = ["/var/opt/gitlab/git-data", "/var/opt/gitlab/gitlab-rails/shared"]
 
 ### GitLab Shell settings for GitLab
@@ -713,6 +770,12 @@
 # gitlab_rails['initial_root_password'] = "password"
 # gitlab_rails['initial_shared_runners_registration_token'] = "token"
 
+### Product Usage Data
+# This setting enables product usage data in the GitLab instance.
+# It will be read on initial installation only. Once GitLab is up and running,
+# this setting should be toggled from the admin pages in the UI.
+# gitlab_rails['initial_gitlab_product_usage_data'] = nil
+
 #### Toggle if root password should be printed to STDOUT during initialization
 # gitlab_rails['display_initial_root_password'] = false
 
@@ -724,11 +787,11 @@
 ####! Updating the file specified in this path won't yield any change after the first reconfigure run.
 # gitlab_rails['initial_license_file'] = '/etc/gitlab/company.gitlab-license'
 
-#### Enable or disable automatic database migrations
+####! Enable or disable automatic database migrations
 # gitlab_rails['auto_migrate'] = true
 
-#### This is advanced feature used by large gitlab deployments where loading
-#### whole RAILS env takes a lot of time.
+####! This is advanced feature used by large gitlab deployments where loading
+####! whole RAILS env takes a lot of time.
 # gitlab_rails['rake_cache_clear'] = true
 
 ### GitLab database settings
@@ -759,11 +822,23 @@
 # gitlab_rails['db_application_name'] = nil
 # gitlab_rails['db_database_tasks'] = true
 
+##! Command to generate extra database configuration
+# gitlab_rails['db_extra_config_command'] = nil
+
 ### Gitlab decomposed database settings
 ###! Docs: https://docs.gitlab.com/omnibus/settings/database.html
+# gitlab_rails['databases']['main']['db_database'] = 'gitlabhq_production'
+# gitlab_rails['databases']['main']['database_tasks'] = true
 # gitlab_rails['databases']['ci']['enable'] = true
 # gitlab_rails['databases']['ci']['db_database'] = 'gitlabhq_production'
 # gitlab_rails['databases']['ci']['database_tasks'] = false
+
+### GitLab ClickHouse connection settings
+###! EXPERIMENTAL
+# gitlab_rails['clickhouse_databases']['main']['database'] = 'dbname'
+# gitlab_rails['clickhouse_databases']['main']['url'] = 'https://example.com/path'
+# gitlab_rails['clickhouse_databases']['main']['username'] = 'gitlab'
+# gitlab_rails['clickhouse_databases']['main']['password'] = 'password'
 
 ### GitLab Redis settings
 ###! Connect to your own Redis instance
@@ -776,9 +851,34 @@
 # gitlab_rails['redis_password'] = nil
 # gitlab_rails['redis_database'] = 0
 # gitlab_rails['redis_enable_client'] = true
+# gitlab_rails['redis_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_tls_client_cert_file'] = nil
+# gitlab_rails['redis_tls_client_key_file'] = nil
+# gitlab_rails['redis_connect_timeout'] = nil
+# gitlab_rails['redis_read_timeout'] = nil
+# gitlab_rails['redis_write_timeout'] = nil
 
 #### Redis local UNIX socket (will be disabled if TCP method is used)
 # gitlab_rails['redis_socket'] = "/var/opt/gitlab/redis/redis.socket"
+
+#### Cells
+# gitlab_rails['cell'] = {
+#   enabled: false,
+#   id: nil,
+#   database: {
+#     skip_sequence_alteration: false
+#   },
+#   topology_service_client: {
+#     address: 'topology-service.gitlab.example.com:443',
+#     ca_file: 'path/to/your/ca/.pem',
+#     certificate_file: 'path/to/your/cert/.pem',
+#     private_key_file: 'path/to/your/key/.pem'
+#   }
+# }
+
+#### Session cookie settings
+# gitlab_rails['session_store_session_cookie_token_prefix'] = ''
 
 #### Sentinel support
 ####! To have Sentinel working, you must enable Redis TCP connection support
@@ -790,6 +890,10 @@
 #   {'host' => '127.0.0.1', 'port' => 26379},
 # ]
 # gitlab_rails['redis_sentinels_password'] = 'sentinel-requirepass-goes-here'
+
+# gitlab_rails['redis_sentinel_master'] = nil
+# gitlab_rails['redis_sentinel_master_ip'] = nil
+# gitlab_rails['redis_sentinel_master_port'] = nil
 
 #### Cluster support
 ####! Cluster support is only available for selected Redis instances. `resque.yml` will not
@@ -803,62 +907,109 @@
 # ]
 
 #### Separate instances support
-###! Docs: https://docs.gitlab.com/omnibus/settings/redis.html#running-with-multiple-redis-instances
+####! Docs: https://docs.gitlab.com/omnibus/settings/redis.html#running-with-multiple-redis-instances
 # gitlab_rails['redis_cache_instance'] = nil
 # gitlab_rails['redis_cache_sentinels'] = nil
 # gitlab_rails['redis_cache_sentinels_password'] = nil
 # gitlab_rails['redis_cache_username'] = nil
 # gitlab_rails['redis_cache_password'] = nil
 # gitlab_rails['redis_cache_cluster_nodes'] = nil
+# gitlab_rails['redis_cache_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_cache_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_cache_tls_client_cert_file'] = nil
+# gitlab_rails['redis_cache_tls_client_key_file'] = nil
 # gitlab_rails['redis_queues_instance'] = nil
 # gitlab_rails['redis_queues_sentinels'] = nil
 # gitlab_rails['redis_queues_sentinels_password'] = nil
 # gitlab_rails['redis_queues_username'] = nil
 # gitlab_rails['redis_queues_password'] = nil
 # gitlab_rails['redis_queues_cluster_nodes'] = nil
+# gitlab_rails['redis_queues_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_queues_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_queues_tls_client_cert_file'] = nil
+# gitlab_rails['redis_queues_tls_client_key_file'] = nil
 # gitlab_rails['redis_shared_state_instance'] = nil
 # gitlab_rails['redis_shared_state_sentinels'] = nil
 # gitlab_rails['redis_shared_state_sentinels_password'] = nil
 # gitlab_rails['redis_shared_state_username'] = nil
 # gitlab_rails['redis_shared_state_password'] = nil
 # gitlab_rails['redis_shared_state_cluster_nodes'] = nil
+# gitlab_rails['redis_shared_state_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_shared_state_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_shared_state_tls_client_cert_file'] = nil
+# gitlab_rails['redis_shared_state_tls_client_key_file'] = nil
 # gitlab_rails['redis_trace_chunks_instance'] = nil
 # gitlab_rails['redis_trace_chunks_sentinels'] = nil
 # gitlab_rails['redis_trace_chunks_sentinels_password'] = nil
 # gitlab_rails['redis_trace_chunks_username'] = nil
 # gitlab_rails['redis_trace_chunks_password'] = nil
 # gitlab_rails['redis_trace_chunks_cluster_nodes'] = nil
+# gitlab_rails['redis_trace_chunks_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_trace_chunks_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_trace_chunks_tls_client_cert_file'] = nil
+# gitlab_rails['redis_trace_chunks_tls_client_key_file'] = nil
 # gitlab_rails['redis_actioncable_instance'] = nil
 # gitlab_rails['redis_actioncable_sentinels'] = nil
 # gitlab_rails['redis_actioncable_sentinels_password'] = nil
 # gitlab_rails['redis_actioncable_username'] = nil
 # gitlab_rails['redis_actioncable_password'] = nil
 # gitlab_rails['redis_actioncable_cluster_nodes'] = nil
+# gitlab_rails['redis_actioncable_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_actioncable_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_actioncable_tls_client_cert_file'] = nil
+# gitlab_rails['redis_actioncable_tls_client_key_file'] = nil
 # gitlab_rails['redis_rate_limiting_instance'] = nil
 # gitlab_rails['redis_rate_limiting_sentinels'] = nil
 # gitlab_rails['redis_rate_limiting_sentinels_password'] = nil
 # gitlab_rails['redis_rate_limiting_username'] = nil
 # gitlab_rails['redis_rate_limiting_password'] = nil
 # gitlab_rails['redis_rate_limiting_cluster_nodes'] = nil
+# gitlab_rails['redis_rate_limiting_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_rate_limiting_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_rate_limiting_tls_client_cert_file'] = nil
+# gitlab_rails['redis_rate_limiting_tls_client_key_file'] = nil
 # gitlab_rails['redis_sessions_instance'] = nil
 # gitlab_rails['redis_sessions_sentinels'] = nil
 # gitlab_rails['redis_sessions_sentinels_password'] = nil
 # gitlab_rails['redis_sessions_username'] = nil
 # gitlab_rails['redis_sessions_password'] = nil
 # gitlab_rails['redis_sessions_cluster_nodes'] = nil
+# gitlab_rails['redis_sessions_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_sessions_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_sessions_tls_client_cert_file'] = nil
+# gitlab_rails['redis_sessions_tls_client_key_file'] = nil
 # gitlab_rails['redis_cluster_rate_limiting_instance'] = nil
 # gitlab_rails['redis_cluster_rate_limiting_sentinels'] = nil
 # gitlab_rails['redis_cluster_rate_limiting_sentinels_password'] = nil
 # gitlab_rails['redis_cluster_rate_limiting_username'] = nil
 # gitlab_rails['redis_cluster_rate_limiting_password'] = nil
 # gitlab_rails['redis_cluster_rate_limiting_cluster_nodes'] = nil
+# gitlab_rails['redis_cluster_rate_limiting_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_cluster_rate_limiting_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_cluster_rate_limiting_tls_client_cert_file'] = nil
+# gitlab_rails['redis_cluster_rate_limiting_tls_client_key_file'] = nil
 # gitlab_rails['redis_repository_cache_instance'] = nil
 # gitlab_rails['redis_repository_cache_sentinels'] = nil
 # gitlab_rails['redis_repository_cache_sentinels_password'] = nil
 # gitlab_rails['redis_repository_cache_username'] = nil
 # gitlab_rails['redis_repository_cache_password'] = nil
 # gitlab_rails['redis_repository_cache_cluster_nodes'] = nil
+# gitlab_rails['redis_repository_cache_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_repository_cache_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_repository_cache_tls_client_cert_file'] = nil
+# gitlab_rails['redis_repository_cache_tls_client_key_file'] = nil
+# gitlab_rails['redis_workhorse_instance'] = nil
+# gitlab_rails['redis_workhorse_sentinels'] = nil
+# gitlab_rails['redis_workhorse_sentinels_password'] = nil
+# gitlab_rails['redis_workhorse_username'] = nil
+# gitlab_rails['redis_workhorse_password'] = nil
+# gitlab_rails['redis_workhorse_cluster_nodes'] = nil
+# gitlab_rails['redis_workhorse_tls_ca_cert_dir'] = '/opt/gitlab/embedded/ssl/certs/'
+# gitlab_rails['redis_workhorse_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_rails['redis_workhorse_tls_client_cert_file'] = nil
+# gitlab_rails['redis_workhorse_tls_client_key_file'] = nil
 
+# gitlab_rails['redis_workhorse_sentinel_master'] = nil
 
 # gitlab_rails['redis_yml_override'] = nil
 
@@ -875,9 +1026,9 @@
 # gitlab_rails['registry_port'] = "5005"
 # gitlab_rails['registry_path'] = "/var/opt/gitlab/gitlab-rails/shared/registry"
 
-# Notification secret, it's used to authenticate notification requests to GitLab application
-# You only need to change this when you use external Registry service, otherwise
-# it will be taken directly from notification settings of your Registry
+###! Notification secret, it's used to authenticate notification requests to GitLab application
+###! You only need to change this when you use external Registry service, otherwise
+###! it will be taken directly from notification settings of your Registry
 # gitlab_rails['registry_notification_secret'] = nil
 
 ###! **Do not change the following 3 settings unless you know what you are
@@ -893,6 +1044,7 @@
 # registry['uid'] = nil
 # registry['gid'] = nil
 # registry['dir'] = "/var/opt/gitlab/registry"
+# registry['shell'] = "/usr/sbin/nologin"
 # registry['registry_http_addr'] = "127.0.0.1:5000"
 # registry['debug_addr'] = "localhost:5001"
 # registry['log_directory'] = "/var/log/gitlab/registry"
@@ -909,6 +1061,7 @@
 # registry['validation_enabled'] = false
 # registry['autoredirect'] = false
 # registry['compatibility_schema1_enabled'] = false
+# registry['database'] = nil
 
 ### Registry backend storage
 ###! Docs: https://docs.gitlab.com/ee/administration/packages/container_registry.html#configure-storage-for-the-container-registry
@@ -925,13 +1078,57 @@
 #   }
 # }
 
+### Registry database
+###! Docs: https://docs.gitlab.com/ee/administration/packages/container_registry_metadata_database.html#new-installations
+# registry['database'] = {
+#   'enabled' => true,
+#   'host' => 'localhost',
+#   'port' => 5432,
+#   'user' => 'postgres',
+#   'password' => 'postgres',
+#   'dbname' => 'registry',
+#   'sslmode' => 'verify-full',
+#   'sslcert' => '/path/to/client.crt',
+#   'sslkey' => '/path/to/client.key',
+#   'sslrootcert' => '/path/to/root.crt',
+#   'connecttimeout' => '5s',
+#   'draintimeout' => '2m',
+#   'preparedstatements' => false,
+#   'primary' => 'primary.record.fqdn',
+#   'pool' => {
+#       'maxidle' => 25,
+#       'maxopen' => 25,
+#       'maxlifetime' => '5m'
+#   }
+# }
+
+### Registry garbage collection
+###! Docs: https://gitlab.com/gitlab-org/container-registry/-/blob/master/docs/configuration.md?ref_type=heads#gc
+# registry['gc'] = {
+#   'disabled' => false,
+#   'maxbackoff' => '24h',
+#   'noidlebackoff' => false,
+#   'transactiontimeout' => '10s',
+#   'reviewafter' => '24h',
+#   'manifests' => {
+#       'disabled' => false,
+#       'interval' => '5s'
+#   },
+#   'blobs' => {
+#       'disabled' => false,
+#       'interval' => '5s',
+#       'storagetimeout' => '5s'
+#   }
+# }
+
 ### Registry notifications endpoints
 # registry['notifications'] = [
 #   {
 #     'name' => 'test_endpoint',
 #     'url' => 'https://gitlab.example.com/notify2',
 #     'timeout' => '500ms',
-#     'threshold' => 5,
+#     'threshold' => 5, # DEPRECATED: use maxretries instead https://gitlab.com/gitlab-org/container-registry/-/issues/1243
+#     'maxretries' => 5,
 #     'backoff' => '1s',
 #     'headers' => {
 #       "Authorization" => ["AUTHORIZATION_EXAMPLE_TOKEN"]
@@ -941,6 +1138,7 @@
 ### Default registry notifications
 # registry['default_notifications_timeout'] = "500ms"
 # registry['default_notifications_threshold'] = 5
+# registry['default_notifications_maxretries'] = 5
 # registry['default_notifications_backoff'] = "1s"
 # registry['default_notifications_headers'] = {}
 
@@ -951,12 +1149,6 @@
 # gitlab_rails['sentry_dsn'] = 'https://<key>@sentry.io/<project>'
 # gitlab_rails['sentry_clientside_dsn'] = 'https://<key>@sentry.io/<project>'
 # gitlab_rails['sentry_environment'] = 'production'
-
-################################################################################
-## CI_JOB_JWT
-################################################################################
-##! RSA private key used to sign CI_JOB_JWT
-# gitlab_rails['ci_jwt_signing_key'] = nil # Will be generated if not set.
 
 ################################################################################
 ## GitLab Workhorse
@@ -1046,6 +1238,34 @@
 ##! Semantic metadata used when registering GitLab Workhorse as a Consul service
 # gitlab_workhorse['consul_service_meta'] = {}
 
+##! Redis settings specific for GitLab Workhorse
+##! To be used when Workhorse is supposed to use a different Redis instance than
+##! other components. The settings specified here should match
+##! `gitlab_rails['redis_workhorse_*']` settings, if specified. If not specified,
+##! they are inferred from the below values. `gitlab_rails['redis_workhorse_*']`
+##! settings tell the Rails app which Redis has channels to publish messages to,
+##! and `gitlab_workhorse['redis_*']` tells Workhorse which Redis has channels to
+##! subscribe to. Hence, the requirement of the settings to match.
+# gitlab_workhorse['redis_socket'] = "/var/opt/gitlab/redis/redis.socket"
+# gitlab_workhorse['redis_host'] = "127.0.0.1"
+# gitlab_workhorse['redis_port'] = nil
+# gitlab_workhorse['redis_database'] = nil
+# gitlab_workhorse['redis_username'] = nil
+# gitlab_workhorse['redis_password'] = nil
+# gitlab_workhorse['redis_ssl'] = false
+# gitlab_workhorse['redis_cluster_nodes'] = []
+# gitlab_workhorse['redis_sentinels'] = []
+# gitlab_workhorse['redis_sentinels_password'] = nil
+# gitlab_workhorse['redis_sentinel_master'] = nil
+# gitlab_workhorse['redis_sentinel_master_ip'] = nil
+# gitlab_workhorse['redis_sentinel_master_port'] = nil
+
+##! Command to generate extra configuration
+# gitlab_workhorse['extra_config_command'] = nil
+
+##! Metadata configuration section
+# gitlab_workhorse['metadata_zip_reader_limit_bytes'] = nil
+
 ################################################################################
 ## GitLab User Settings
 ##! Modify default git user.
@@ -1083,7 +1303,7 @@
 # puma['listen'] = '127.0.0.1'
 # puma['port'] = 8080
 # puma['socket'] = '/var/opt/gitlab/gitlab-rails/sockets/gitlab.socket'
-# puma['somaxconn'] = 1024
+# puma['somaxconn'] = 2048
 
 ### SSL settings
 # puma['ssl_listen'] = nil
@@ -1101,7 +1321,7 @@
 ###! **We do not recommend changing this setting**
 # puma['log_directory'] = "/var/log/gitlab/puma"
 
-### **Only change these settings if you understand well what they mean**
+###! **Only change these settings if you understand well what they mean**
 ###! Docs: https://github.com/schneems/puma_worker_killer
 # puma['per_worker_max_memory_mb'] = 1024
 
@@ -1128,14 +1348,14 @@
 ##! GitLab allows one to start multiple sidekiq processes. These
 ##! processes can be used to consume a dedicated set of queues. This
 ##! can be used to ensure certain queues are able to handle additional workload.
-##! https://docs.gitlab.com/ee/administration/operations/extra_sidekiq_processes.html
+##! https://docs.gitlab.com/ee/administration/sidekiq/extra_sidekiq_processes.html
 
+# sidekiq['enable'] = true
 # sidekiq['log_directory'] = "/var/log/gitlab/sidekiq"
 # sidekiq['log_format'] = "json"
 # sidekiq['shutdown_timeout'] = 4
 # sidekiq['interval'] = nil
-# sidekiq['max_concurrency'] = 20
-# sidekiq['min_concurrency'] = nil
+# sidekiq['concurrency'] = 20
 
 ##! GitLab allows route a job to a particular queue determined by an array of ##! routing rules.
 ##! Each routing rule is a tuple of queue selector query and corresponding queue. By default,
@@ -1181,20 +1401,19 @@
 
 # gitlab_shell['auth_file'] = "/var/opt/gitlab/.ssh/authorized_keys"
 
-### Migration to Go feature flags
-###! Docs: https://gitlab.com/gitlab-org/gitlab-shell#migration-to-go-feature-flags
-# gitlab_shell['migration'] = { enabled: true, features: [] }
-
 ### Git trace log file.
 ###! If set, git commands receive GIT_TRACE* environment variables
-###! Docs: https://git-scm.com/book/es/v2/Git-Internals-Environment-Variables#Debugging
-###! An absolute path starting with / – the trace output will be appended to
+###! Docs: https://git-scm.com/book/en/v2/Git-Internals-Environment-Variables#_debugging
+###! An absolute path starting with / - the trace output will be appended to
 ###! that file. It needs to exist so we can check permissions and avoid
 ###! throwing warnings to the users.
 # gitlab_shell['git_trace_log_file'] = "/var/log/gitlab/gitlab-shell/gitlab-shell-git-trace.log"
 
 ##! **We do not recommend changing this directory.**
 # gitlab_shell['dir'] = "/var/opt/gitlab/gitlab-shell"
+
+# gitlab_shell['lfs_pure_ssh_protocol'] = false
+# gitlab_shell['pat'] = { enabled: true, allowed_scopes: [] }
 
 ################################################################################
 ## gitlab-sshd
@@ -1204,8 +1423,8 @@
 # gitlab_sshd['generate_host_keys'] = true
 # gitlab_sshd['dir'] = "/var/opt/gitlab/gitlab-sshd"
 
-# gitlab-sshd outputs most logs to /var/log/gitlab/gitlab-shell/gitlab-shell.log.
-# This directory only stores stdout/stderr output from the daemon.
+###! gitlab-sshd outputs most logs to /var/log/gitlab/gitlab-shell/gitlab-shell.log.
+###! This directory only stores stdout/stderr output from the daemon.
 # gitlab_sshd['log_directory'] = "/var/log/gitlab/gitlab-sshd/"
 
 # gitlab_sshd['env_directory'] = '/opt/gitlab/etc/gitlab-sshd/env'
@@ -1220,6 +1439,9 @@
 # gitlab_sshd['ciphers'] = nil
 # gitlab_sshd['kex_algorithms'] = nil
 # gitlab_sshd['macs'] = nil
+##! A list of the to be accepted public key algorithms.
+##! For example: %w(ssh-ed25519 ecdsa-sha2-nistp256 rsa-sha2-256 rsa-sha2-512)
+# gitlab_sshd['public_key_algorithms'] = nil
 # gitlab_sshd['login_grace_time'] = 60
 # gitlab_sshd['host_keys_dir'] = '/var/opt/gitlab/gitlab-sshd'
 # gitlab_sshd['host_keys_glob'] = 'ssh_host_*_key'
@@ -1230,20 +1452,22 @@
 ## GitLab PostgreSQL
 ################################################################
 
-###! Changing any of these settings requires a restart of postgresql.
-###! By default, reconfigure reloads postgresql if it is running. If you
-###! change any of these settings, be sure to run `gitlab-ctl restart postgresql`
-###! after reconfigure in order for the changes to take effect.
+##! Changing any of these settings requires a restart of postgresql.
+##! By default, reconfigure reloads postgresql if it is running. If you
+##! change any of these settings, be sure to run `gitlab-ctl restart postgresql`
+##! after reconfigure in order for the changes to take effect.
 # postgresql['enable'] = true
 # postgresql['listen_address'] = nil
 # postgresql['port'] = 5432
 
-## Only used when Patroni is enabled. This is the port that PostgreSQL responds to other
-## cluster members. This port is used by Patroni to advertize the PostgreSQL connection
-## endpoint to the cluster. By default it is the same as postgresql['port'].
+##! Only used when Patroni is enabled. This is the port that PostgreSQL responds to other
+##! cluster members. This port is used by Patroni to advertise the PostgreSQL connection
+##! endpoint to the cluster. By default it is the same as postgresql['port'].
 # postgresql['connect_port'] = 5432
 
 ##! **recommend value is 1/4 of total RAM, up to 14GB.**
+##! For Docker containers, the default of 256 MB is set in docker/assets/gitlab.rb.
+##! Otherwise, 1/4 of the total RAM is used in files/gitlab-cookbooks/postgresql/attributes/default.rb.
 # postgresql['shared_buffers'] = "256MB"
 
 ### Advanced settings
@@ -1255,6 +1479,8 @@
 # postgresql['log_truncate_on_rotation'] = nil
 # postgresql['log_rotation_age'] = nil
 # postgresql['log_rotation_size'] = nil
+# postgresql['log_connections'] = "off"
+# postgresql['log_disconnections'] = "off"
 ##! 'username' affects the system and PostgreSQL user accounts created during installation and cannot be changed
 ##! on an existing installation. See https://gitlab.com/gitlab-org/omnibus-gitlab/-/issues/3606 for more details.
 # postgresql['username'] = "gitlab-psql"
@@ -1280,7 +1506,7 @@
 # postgresql['hot_standby'] = "off"
 
 ### SSL settings
-# See https://www.postgresql.org/docs/13/static/runtime-config-connection.html#GUC-SSL-CERT-FILE for more details
+###! See https://www.postgresql.org/docs/13/static/runtime-config-connection.html#GUC-SSL-CERT-FILE for more details
 # postgresql['ssl'] = 'on'
 # postgresql['hostssl'] = false
 # postgresql['ssl_ciphers'] = 'HIGH:MEDIUM:+3DES:!aNULL:!SSLv3:!TLSv1'
@@ -1303,7 +1529,7 @@
 # postgresql['max_replication_slots'] = 0
 # postgresql['max_locks_per_transaction'] = 128
 
-# Backup/Archive settings
+### Backup/Archive settings
 # postgresql['archive_mode'] = "off"
 
 ###! Changing any of these settings only requires a reload of postgresql. You do not need to
@@ -1340,7 +1566,7 @@
 # postgresql['min_wal_size'] = "80MB"
 # postgresql['max_wal_size'] = "1GB"
 
-# Backup/Archive settings
+### Backup/Archive settings
 # postgresql['archive_command'] = nil
 # postgresql['archive_timeout'] = "0"
 
@@ -1356,7 +1582,7 @@
 # postgresql['random_page_cost'] = 2.0
 # postgresql['log_temp_files'] = -1
 # postgresql['log_checkpoints'] = 'off'
-# To add custom entries to pg_hba.conf use the following
+###! To add custom entries to pg_hba.conf use the following
 # postgresql['custom_pg_hba_entries'] = {
 #   APPLICATION: [ # APPLICATION should identify what the settings are used for
 #     {
@@ -1369,12 +1595,12 @@
 #     }
 #   ]
 # }
-# See https://www.postgresql.org/docs/13/static/auth-pg-hba-conf.html for an explanation
-# of the values
+###! See https://www.postgresql.org/docs/13/static/auth-pg-hba-conf.html for an explanation
+###! of the values
 
 ### Version settings
 # Set this if you have disabled the bundled PostgreSQL but still want to use the backup rake tasks
-# postgresql['version'] = 10
+# postgresql['version'] = 16
 
 
 ##! Automatically restart PostgreSQL service when version changes.
@@ -1397,6 +1623,7 @@
 # redis['username'] = "gitlab-redis"
 # redis['group'] = "gitlab-redis"
 # redis['maxclients'] = "10000"
+# redis['open_files_ulimit'] = nil # Maximum number of open files allowed for the redis process (defaults to ope
 # redis['maxmemory'] = "0"
 # redis['maxmemory_policy'] = "noeviction"
 # redis['maxmemory_samples'] = "5"
@@ -1429,15 +1656,15 @@
 # redis['tls_session_cache_size'] = nil
 # redis['tls_session_cache_timeout'] = nil
 
-### Disable or obfuscate unnecessary redis command names
-### Uncomment and edit this block to add or remove entries.
-### See https://docs.gitlab.com/omnibus/settings/redis.html#renamed-commands
-### for detailed usage
-###
+###! Disable or obfuscate unnecessary redis command names
+###! Uncomment and edit this block to add or remove entries.
+###! See https://docs.gitlab.com/omnibus/settings/redis.html#renamed-commands
+###! for detailed usage
+###!
 # redis['rename_commands'] = {
 #   'KEYS': ''
-#}
-#
+# }
+
 
 ###! Configure timeout (in seconds) for runit's sv commands used for managing
 ###! the Redis service
@@ -1446,7 +1673,7 @@
 ###! **To enable only Redis service in this machine, uncomment
 ###!   one of the lines below (choose master or replica instance types).**
 ###! Docs: https://docs.gitlab.com/omnibus/settings/redis.html
-###!       https://docs.gitlab.com/ee/administration/high_availability/redis.html
+###!       https://docs.gitlab.com/ee/administration/redis/replication_and_failover.html
 # redis_master_role['enable'] = true
 # redis_replica_role['enable'] = true
 
@@ -1459,7 +1686,7 @@
 ###! **You need a master replica Redis replication to be able to do failover**
 ###! **Please read the documentation before enabling it to understand the
 ###!   caveats:**
-###! Docs: https://docs.gitlab.com/ee/administration/high_availability/redis.html
+###! Docs: https://docs.gitlab.com/ee/administration/redis/replication_and_failover.html
 
 ### Replication support
 #### Replica Redis instance
@@ -1526,7 +1753,7 @@
 ################################################################################
 
 # nginx['enable'] = true
-# nginx['client_max_body_size'] = '250m'
+# nginx['client_max_body_size'] = '0'
 # nginx['redirect_http_to_https'] = false
 # nginx['redirect_http_to_https_port'] = 80
 
@@ -1545,7 +1772,6 @@
 # nginx['ssl_prefer_server_ciphers'] = "off"
 
 ##! **Recommended by: https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
-##!                   https://cipherli.st/**
 # nginx['ssl_protocols'] = "TLSv1.2 TLSv1.3"
 
 ##! **Recommended in: https://nginx.org/en/docs/http/ngx_http_ssl_module.html**
@@ -1559,10 +1785,10 @@
 
 # nginx['ssl_dhparam'] = nil # Path to dhparams.pem, eg. /etc/gitlab/ssl/dhparams.pem
 # nginx['ssl_password_file'] = nil # Path to file with passphrases for ssl certificate secret keys
-# nginx['listen_addresses'] = ['*', '[::]']
+# nginx['listen_addresses'] = ['*']
 
 ##! **Defaults to forcing web browsers to always communicate using only HTTPS**
-##! Docs: https://docs.gitlab.com/omnibus/settings/nginx.html#setting-http-strict-transport-security
+##! Docs: https://docs.gitlab.com/omnibus/settings/ssl/#configure-the-http-strict-transport-security-hsts
 # nginx['hsts_max_age'] = 63072000
 # nginx['hsts_include_subdomains'] = false
 
@@ -1577,11 +1803,11 @@
 # nginx['listen_port'] = nil
 
 ##! **Override only if your reverse proxy internally communicates over HTTP**
-##! Docs: https://docs.gitlab.com/omnibus/settings/nginx.html#supporting-proxied-ssl
+##! Docs: https://docs.gitlab.com/omnibus/settings/ssl/#configure-a-reverse-proxy-or-load-balancer-ssl-termination
 # nginx['listen_https'] = nil
 
 ##! **Override only if you use a reverse proxy with proxy protocol enabled**
-##! Docs: https://docs.gitlab.com/omnibus/settings/nginx.html#configuring-proxy-protocol
+##! Docs: https://docs.gitlab.com/omnibus/settings/nginx.html#configuring-the-proxy-protocol
 # nginx['proxy_protocol'] = false
 
 # nginx['custom_gitlab_server_config'] = "location ^~ /foo-namespace/bar-project/raw/ {\n deny all;\n}\n"
@@ -1592,14 +1818,12 @@
 #  "Host" => "$http_host_with_default",
 #  "X-Real-IP" => "$remote_addr",
 #  "X-Forwarded-For" => "$proxy_add_x_forwarded_for",
-#  "X-Forwarded-Proto" => "https",
-#  "X-Forwarded-Ssl" => "on",
 #  "Upgrade" => "$http_upgrade",
 #  "Connection" => "$connection_upgrade"
 # }
 # nginx['proxy_cache_path'] = 'proxy_cache keys_zone=gitlab:10m max_size=1g levels=1:2'
 # nginx['proxy_cache'] = 'gitlab'
-# nginx['proxy_custom_buffer_size'] = '4k'
+# nginx['proxy_custom_buffer_size'] = nil
 # nginx['http2_enabled'] = true
 # nginx['real_ip_trusted_addresses'] = []
 # nginx['real_ip_header'] = nil
@@ -1633,7 +1857,7 @@
 # nginx['cache_max_size'] = '5000m'
 # nginx['server_names_hash_bucket_size'] = 64
 ##! These paths have proxy_request_buffering disabled
-# nginx['request_buffering_off_path_regex'] = "/api/v\\d/jobs/\\d+/artifacts$|/import/gitlab_project$|\\.git/git-receive-pack$|\\.git/gitlab-lfs/objects|\\.git/info/lfs/objects/batch$"
+# nginx['request_buffering_off_path_regex'] = "/api/v\\d/jobs/\\d+/artifacts$|/import/gitlab_project$|\\.git/git-receive-pack$|\\.git/ssh-receive-pack$|\\.git/ssh-upload-pack$|\\.git/gitlab-lfs/objects|\\.git/info/lfs/objects/batch$"
 
 ### Nginx status
 # nginx['status'] = {
@@ -1683,7 +1907,7 @@
 # logging['udp_log_shipping_host'] = nil
 
 ##! override the hostname used when logs are shipped via UDP,
-##  by default the system hostname will be used.
+##!  by default the system hostname will be used.
 # logging['udp_log_shipping_hostname'] = nil
 
 ##! remote port to ship log messages to via UDP
@@ -1720,7 +1944,7 @@
 
 ################################################################################
 ## Runtime directory
-##! Docs: https://docs.gitlab.com//omnibus/settings/configuration.html#configuring-runtime-directory
+##! Docs: https://docs.gitlab.com//omnibus/settings/configuration.html#configure-the-runtime-directory
 ################################################################################
 
 # runtime_dir '/run'
@@ -1823,6 +2047,7 @@
 # gitlab_pages['internal_gitlab_server'] = nil # Defaults to gitlab_server, can be changed to internal load balancer
 # gitlab_pages['auth_secret'] = nil # Generated if not present
 # gitlab_pages['auth_scope'] = nil # Defaults to api, can be changed to read_api to increase security
+# gitlab_pages['auth_timeout'] = "5s" # GitLab application client timeout for authentication
 # gitlab_pages['auth_cookie_session_timeout'] = "10m" # Authentication cookie session timeout (truncated to seconds). A zero value means the cookie will be deleted after the browser session ends
 
 ##! GitLab Pages Server Shutdown Timeout
@@ -1922,17 +2147,26 @@
 #   'SSL_CERT_DIR' => "#{node['package']['install-dir']}/embedded/ssl/certs/"
 # }
 
+##! Experimental - Enable namespace in path
+# gitlab_pages['namespace_in_path'] = false
+
+##! Configure GitLab Pages client cert and client key which will be used as mutual TLS with GitLab API
+# gitlab_pages['client_cert'] = "/path/to/client.crt"
+# gitlab_pages['client_key'] = "/path/to/client.key"
+##! Configure root CA certs used to sign client certs which will be used with GitLab API
+# gitlab_pages['client_ca_certs'] = "/path/to/ca.crt"
+
 ################################################################################
 ## GitLab Pages NGINX
 ################################################################################
 
-# All the settings defined in the "GitLab Nginx" section are also available in
-# this "GitLab Pages NGINX" section, using the key `pages_nginx`.  However,
-# those settings should be explicitly set. That is, settings given as
-# `nginx['some_setting']` WILL NOT be automatically replicated as
-# `pages_nginx['some_setting']` and should be set separately.
+##! All the settings defined in the "GitLab Nginx" section are also available in
+##! this "GitLab Pages NGINX" section, using the key `pages_nginx`.  However,
+##! those settings should be explicitly set. That is, settings given as
+##! `nginx['some_setting']` WILL NOT be automatically replicated as
+##! `pages_nginx['some_setting']` and should be set separately.
 
-# Below you can find settings that are exclusive to "GitLab Pages NGINX"
+##! Below you can find settings that are exclusive to "GitLab Pages NGINX"
 # pages_nginx['enable'] = true
 
 # gitlab_rails['pages_path'] = "/var/opt/gitlab/gitlab-rails/shared/pages"
@@ -1957,15 +2191,12 @@
 # gitlab_rails['gitlab_kas_internal_url'] = 'grpc://localhost:8153'
 # gitlab_rails['gitlab_kas_external_k8s_proxy_url'] = 'https://gitlab.example.com/-/kubernetes-agent/k8s-proxy/'
 
-##! Define to enable GitLab KAS
+##! Settings for GitLab KAS
 # gitlab_kas_external_url "ws://gitlab.example.com/-/kubernetes-agent/"
 # gitlab_kas['enable'] = true
 
 ##! Agent configuration for GitLab KAS
-# gitlab_kas['agent_configuration_poll_period'] = 20
-# gitlab_kas['agent_gitops_poll_period'] = 20
-# gitlab_kas['agent_gitops_project_info_cache_ttl'] = 300
-# gitlab_kas['agent_gitops_project_info_cache_error_ttl'] = 60
+# gitlab_kas['agent_configuration_poll_period'] = 300
 # gitlab_kas['agent_info_cache_ttl'] = 300
 # gitlab_kas['agent_info_cache_error_ttl'] = 60
 
@@ -1974,6 +2205,9 @@
 
 ##! Shared secret used for authentication between different KAS instances in a multi-node setup
 # gitlab_kas['private_api_secret_key'] = nil # Will be generated if not set. Base64 encoded and exactly 32 bytes long.
+#
+##! Secret used for WebSocket Token signing and verification. Must be shared in multi-node setup
+# gitlab_kas['websocket_token_secret_key'] = nil # Will be generated if not set. Base64 encoded and exactly 72 bytes long.
 
 ##! Listen configuration for GitLab KAS
 # gitlab_kas['listen_address'] = 'localhost:8150'
@@ -2000,12 +2234,23 @@
 
 ##! Log configuration for GitLab KAS
 # gitlab_kas['log_level'] = 'info'
+# gitlab_kas['grpc_log_level'] = 'error'
 
 ##! Environment variables for GitLab KAS
 # gitlab_kas['env'] = {
 #   'SSL_CERT_DIR' => "/opt/gitlab/embedded/ssl/certs/",
-#   # In a multi-node setup, this address MUST be reachable from other KAS instances. In a single-node setup, it can be on localhost for simplicity
-#   'OWN_PRIVATE_API_URL' => 'grpc://localhost:8155'
+#   # In a multi-node setup, this address MUST be reachable from other KAS instances. In a single-node setup,
+#   # it can be on localhost for simplicity.
+#   # Use OWN_PRIVATE_API_CIDR + OWN_PRIVATE_API_PORT (optional) + OWN_PRIVATE_API_SCHEME (optional) if you cannot
+#   # specify a correct address for each KAS instance in OWN_PRIVATE_API_URL.
+#   # 'OWN_PRIVATE_API_URL' => 'grpc://localhost:8155'
+#   # 'OWN_PRIVATE_API_CIDR' => '10.0.0.0/8', # IPv4 example
+#   # 'OWN_PRIVATE_API_CIDR' => '2001:db8:8a2e:370::7334/64', # IPv6 example
+#   # 'OWN_PRIVATE_API_PORT' => '8155', # if not set, port from private_api_listen_address is used
+#   # 'OWN_PRIVATE_API_SCHEME' => 'grpc', # use grpcs when using TLS on private API endpoint
+#   # OWN_PRIVATE_API_HOST is used to verify the TLS cert hostname.
+#   # Set KAS' host name if you want to use TLS for KAS->KAS communication.
+#   # 'OWN_PRIVATE_API_HOST' => '<server-name-from-cert>',
 # }
 
 ##! Error Reporting and Logging with Sentry
@@ -2018,6 +2263,24 @@
 # gitlab_kas['log_group'] = nil
 # gitlab_kas['env_directory'] = '/opt/gitlab/etc/gitlab-kas/env'
 
+##! Redis settings for GitLab KAS
+# gitlab_kas['redis_socket'] = ''
+# gitlab_kas['redis_host'] = '127.0.0.1'
+# gitlab_kas['redis_port'] = '6379'
+# gitlab_kas['redis_password'] = nil
+
+# gitlab_kas['redis_sentinels'] = []
+# gitlab_kas['redis_sentinels_master_name'] = nil
+# gitlab_kas['redis_sentinels_password'] = ''
+
+# gitlab_kas['redis_ssl'] = false
+# gitlab_kas['redis_tls_ca_cert_file'] = '/opt/gitlab/embedded/ssl/certs/cacert.pem'
+# gitlab_kas['redis_tls_client_cert_file'] = nil
+# gitlab_kas['redis_tls_client_key_file'] = nil
+
+##! Command to generate extra configuration
+# gitlab_kas['extra_config_command'] = nil
+
 ################################################################################
 ## GitLab Suggested Reviewers (EE Only)
 ##! Docs: https://docs.gitlab.com/ee/user/project/merge_requests/reviews/#suggested-reviewers
@@ -2028,7 +2291,7 @@
 
 ################################################################################
 ## GitLab Mattermost
-##! Docs: https://docs.gitlab.com/omnibus/gitlab-mattermost
+##! Docs: https://docs.gitlab.com/ee/integration/mattermost/
 ################################################################################
 
 # mattermost_external_url 'http://mattermost.example.com'
@@ -2067,13 +2330,13 @@
 ## Mattermost NGINX
 ################################################################################
 
-# All the settings defined in the "GitLab Nginx" section are also available in
-# this "Mattermost NGINX" section, using the key `mattermost_nginx`.  However,
-# those settings should be explicitly set. That is, settings given as
-# `nginx['some_setting']` WILL NOT be automatically replicated as
-# `mattermost_nginx['some_setting']` and should be set separately.
+##! All the settings defined in the "GitLab Nginx" section are also available in
+##! this "Mattermost NGINX" section, using the key `mattermost_nginx`.  However,
+##! those settings should be explicitly set. That is, settings given as
+##! `nginx['some_setting']` WILL NOT be automatically replicated as
+##! `mattermost_nginx['some_setting']` and should be set separately.
 
-# Below you can find settings that are exclusive to "Mattermost NGINX"
+##! Below you can find settings that are exclusive to "Mattermost NGINX"
 # mattermost_nginx['enable'] = false
 
 # mattermost_nginx['custom_gitlab_mattermost_server_config'] = "location ^~ /foo-namespace/bar-project/raw/ {\n deny all;\n}\n"
@@ -2093,13 +2356,13 @@
 ## Registry NGINX
 ################################################################################
 
-# All the settings defined in the "GitLab Nginx" section are also available in
-# this "Registry NGINX" section, using the key `registry_nginx`.  However, those
-# settings should be explicitly set. That is, settings given as
-# `nginx['some_setting']` WILL NOT be automatically replicated as
-# `registry_nginx['some_setting']` and should be set separately.
+##! All the settings defined in the "GitLab Nginx" section are also available in
+##! this "Registry NGINX" section, using the key `registry_nginx`.  However, those
+##! settings should be explicitly set. That is, settings given as
+##! `nginx['some_setting']` WILL NOT be automatically replicated as
+##! `registry_nginx['some_setting']` and should be set separately.
 
-# Below you can find settings that are exclusive to "Registry NGINX"
+##! Below you can find settings that are exclusive to "Registry NGINX"
 # registry_nginx['enable'] = false
 
 # registry_nginx['proxy_set_headers'] = {
@@ -2110,8 +2373,8 @@
 #  "X-Forwarded-Ssl" => "on"
 # }
 
-# When the registry is automatically enabled using the same domain as `external_url`,
-# it listens on this port
+##! When the registry is automatically enabled using the same domain as `external_url`,
+##! it listens on this port
 # registry_nginx['listen_port'] = 5050
 
 ################################################################################
@@ -2121,7 +2384,6 @@
 
 ###! **To enable only Monitoring service in this machine, uncomment
 ###!   the line below.**
-###! Docs: https://docs.gitlab.com/ee/administration/high_availability
 # monitoring_role['enable'] = true
 
 # prometheus['enable'] = true
@@ -2142,16 +2404,13 @@
 # prometheus['env'] = {
 #   'SSL_CERT_DIR' => "/opt/gitlab/embedded/ssl/certs/"
 # }
-#
+
 ### Custom scrape configs
-#
-# Prometheus can scrape additional jobs via scrape_configs.  The default automatically
-# includes all of the exporters supported by the omnibus config.
-#
-# See: https://prometheus.io/docs/operating/configuration/#<scrape_config>
-#
-# Example:
-#
+
+###! Prometheus can scrape additional jobs via scrape_configs.  The default automatically
+###! includes all of the exporters supported by the omnibus config.
+###!
+###! See: https://prometheus.io/docs/operating/configuration/#scrape_config
 # prometheus['scrape_configs'] = [
 #   {
 #     'job_name': 'example',
@@ -2160,13 +2419,11 @@
 #     ],
 #   },
 # ]
-#
+
 ### Custom alertmanager config
-#
-# To configure external alertmanagers, create an alertmanager config.
-#
-# See: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#alertmanager_config
-#
+
+###! To configure external alertmanagers, create an alertmanager config.
+###! See: https://prometheus.io/docs/prometheus/latest/configuration/configuration/#alertmanager_config
 # prometheus['alertmanagers'] = [
 #   {
 #     'static_configs' => [
@@ -2178,30 +2435,29 @@
 #     ]
 #   }
 # ]
-#
+
 ### Custom Prometheus flags
-#
+
 # prometheus['flags'] = {
 #   'storage.tsdb.path' => "/var/opt/gitlab/prometheus/data",
 #   'storage.tsdb.retention.time' => "15d",
 #   'config.file' => "/var/opt/gitlab/prometheus/prometheus.yml"
 # }
 
-##! Advanced settings. Should be changed only if absolutely needed.
+###! Advanced settings. Should be changed only if absolutely needed.
 # prometheus['listen_address'] = 'localhost:9090'
 #
 
-##! Service name used to register Prometheus as a Consul service
+###! Service name used to register Prometheus as a Consul service
 # prometheus['consul_service_name'] = 'prometheus'
-##! Semantic metadata used when registering Prometheus as a Consul service
+###! Semantic metadata used when registering Prometheus as a Consul service
 # prometheus['consul_service_meta'] = {}
 
-################################################################################
+
 ###! **Only needed if Prometheus and Rails are not on the same server.**
-### For example, in a multi-node architecture, Prometheus will be installed on the monitoring node, while Rails will be on the Rails node.
-### https://docs.gitlab.com/ee/administration/monitoring/prometheus/index.html#using-an-external-prometheus-server
-### This value should be the address at which Prometheus is available to a GitLab Rails(Puma, Sidekiq) node.
-################################################################################
+###! For example, in a multi-node architecture, Prometheus will be installed on the monitoring node, while Rails will be on the Rails node.
+###! https://docs.gitlab.com/ee/administration/monitoring/prometheus/index.html#using-an-external-prometheus-server
+###! This value should be the address at which Prometheus is available to a GitLab Rails(Puma, Sidekiq) node.
 # gitlab_rails['prometheus_address'] = 'your.prom:9090'
 
 ################################################################################
@@ -2285,14 +2541,16 @@
 # postgres_exporter['home'] = '/var/opt/gitlab/postgres-exporter'
 # postgres_exporter['log_directory'] = '/var/log/gitlab/postgres-exporter'
 # postgres_exporter['log_group'] = nil
-# postgres_exporter['flags'] = {}
+# postgres_exporter['flags'] = {
+#  'collector.stat_user_tables' => false,
+#  'collector.postmaster' => true
+# }
 # postgres_exporter['listen_address'] = 'localhost:9187'
 # postgres_exporter['env_directory'] = '/opt/gitlab/etc/postgres-exporter/env'
 # postgres_exporter['env'] = {
 #   'SSL_CERT_DIR' => "/opt/gitlab/embedded/ssl/certs/"
 # }
 # postgres_exporter['sslmode'] = nil
-# postgres_exporter['per_table_stats'] = false
 
 ##! Service name used to register Postgres Exporter as a Consul service
 # postgres_exporter['consul_service_name'] = 'postgres-exporter'
@@ -2317,7 +2575,6 @@
 ## Prometheus Gitlab exporter
 ##! Docs: https://docs.gitlab.com/ee/administration/monitoring/prometheus/gitlab_exporter.html
 ################################################################################
-
 
 # gitlab_exporter['enable'] = true
 # gitlab_exporter['log_directory'] = "/var/log/gitlab/gitlab-exporter"
@@ -2354,107 +2611,24 @@
 ##! Semantic metadata used when registering GitLab Exporter as a Consul service
 # gitlab_exporter['consul_service_meta'] = {}
 
-# To completely disable prometheus, and all of it's exporters, set to false
+##! Command to generate extra configuration
+# gitlab_exporter['extra_config_command'] = nil
+
+##! To completely disable prometheus, and all of it's exporters, set to false
 # prometheus_monitoring['enable'] = true
-
-################################################################################
-## Grafana Dashboards
-##! Docs: https://docs.gitlab.com/ee/administration/monitoring/prometheus/#prometheus-as-a-grafana-data-source
-################################################################################
-
-# grafana['enable'] = false
-# grafana['enable_deprecated_service'] = false
-# grafana['log_directory'] = '/var/log/gitlab/grafana'
-# grafana['log_group'] = nil
-# grafana['home'] = '/var/opt/gitlab/grafana'
-# grafana['admin_password'] = 'admin'
-# grafana['allow_user_sign_up'] = false
-# grafana['basic_auth_enabled'] = false
-# grafana['disable_login_form'] = true
-# grafana['gitlab_application_id'] = 'GITLAB_APPLICATION_ID'
-# grafana['gitlab_secret'] = 'GITLAB_SECRET'
-# grafana['env_directory'] = '/opt/gitlab/etc/grafana/env'
-# grafana['allowed_groups'] = []
-# grafana['gitlab_auth_sign_up'] = true
-# grafana['env'] = {
-#   'SSL_CERT_DIR' => "#{node['package']['install-dir']}/embedded/ssl/certs/"
-# }
-# grafana['metrics_enabled'] = false
-# grafana['metrics_basic_auth_username'] = 'grafana_metrics' # default: nil
-# grafana['metrics_basic_auth_password'] = 'please_set_a_unique_password' # default: nil
-# grafana['alerting_enabled'] = false
-
-### SMTP Configuration
-#
-# See: http://docs.grafana.org/administration/configuration/#smtp
-#
-# grafana['smtp'] = {
-#   'enabled' => true,
-#   'host' => 'localhost:25',
-#   'user' => nil,
-#   'password' => nil,
-#   'cert_file' => nil,
-#   'key_file' => nil,
-#   'skip_verify' => false,
-#   'from_address' => 'admin@grafana.localhost',
-#   'from_name' => 'Grafana',
-#   'ehlo_identity' => 'dashboard.example.com',
-#   'startTLS_policy' => nil
-# }
-
-# Grafana usage reporting defaults to gitlab_rails['usage_ping_enabled']
-# grafana['reporting_enabled'] = true
-
-### Dashboards
-#
-# See: http://docs.grafana.org/administration/provisioning/#dashboards
-#
-# NOTE: Setting this will override the default.
-#
-# grafana['dashboards'] = [
-#   {
-#     'name' => 'GitLab Omnibus',
-#     'orgId' => 1,
-#     'folder' => 'GitLab Omnibus',
-#     'type' => 'file',
-#     'disableDeletion' => true,
-#     'updateIntervalSeconds' => 600,
-#     'options' => {
-#       'path' => '/opt/gitlab/embedded/service/grafana-dashboards',
-#     }
-#   }
-# ]
-
-### Datasources
-#
-# See: http://docs.grafana.org/administration/provisioning/#example-datasource-config-file
-#
-# NOTE: Setting this will override the default.
-#
-# grafana['datasources'] = [
-#   {
-#     'name' => 'GitLab Omnibus',
-#     'type' => 'prometheus',
-#     'access' => 'proxy',
-#     'url' => 'http://localhost:9090'
-#   }
-# ]
-
-##! Advanced settings. Should be changed only if absolutely needed.
-# grafana['http_addr'] = 'localhost'
-# grafana['http_port'] = 3000
 
 ################################################################################
 ## Gitaly
 ##! Docs: https://docs.gitlab.com/ee/administration/gitaly/configure_gitaly.html
 ################################################################################
 
-# The gitaly['enable'] option exists for the purpose of cluster
-# deployments, see https://docs.gitlab.com/ee/administration/gitaly/index.html .
+##! The gitaly['enable'] option exists for the purpose of cluster
+##! deployments, see https://docs.gitlab.com/ee/administration/gitaly/index.html .
 # gitaly['enable'] = true
 # gitaly['dir'] = "/var/opt/gitlab/gitaly"
 # gitaly['log_group'] = nil
 # gitaly['bin_path'] = "/opt/gitlab/embedded/bin/gitaly"
+# gitaly['use_wrapper'] = true
 # gitaly['env_directory'] = "/opt/gitlab/etc/gitaly/env"
 # gitaly['env'] = {
 #  'PATH' => "/opt/gitlab/bin:/opt/gitlab/embedded/bin:/bin:/usr/bin",
@@ -2465,6 +2639,8 @@
 #  'SSL_CERT_DIR' => "/opt/gitlab/embedded/ssl/certs/",
 #  'WRAPPER_JSON_LOGGING' => true
 # }
+# gitaly['gitlab_secret'] = <secret>
+
 
 # gitaly['open_files_ulimit'] = 15000 # Maximum number of open files allowed for the gitaly process
 ##! Service name used to register Gitaly as a Consul service
@@ -2512,6 +2688,10 @@
 #       { key: 'http.http://example.com.proxy', value: 'http://example.proxy.com' },
 #     ],
 #   },
+#   gitlab: {
+#     url: 'http://localhost:9999',
+#     relative_url_root: '/gitlab-ee',
+#   },
 #   hooks: {
 #     custom_hooks_dir: '/var/opt/gitlab/gitaly/custom_hooks',
 #   },
@@ -2533,6 +2713,7 @@
 #       memory_bytes: 12884901888,
 #       cpu_shares: 128,
 #       cpu_quota_us: 200000
+#       max_cgroups_per_repo: 2
 #     },
 #   },
 #   concurrency: [
@@ -2562,6 +2743,12 @@
 #     dir: '/var/opt/gitlab/git-data/repositories/+gitaly/PackObjectsCache',
 #     max_age: '5m',
 #   },
+#   storage: [
+#     {
+#       name: 'gitaly-1',
+#       path: '/var/opt/gitlab/git-data/repositories',
+#     },
+#   ],
 # }
 
 ################################################################################
@@ -2678,7 +2865,7 @@
 # }
 
 ################################################################################
-# Storage check
+## Storage check
 ################################################################################
 # storage_check['enable'] = false
 # storage_check['target'] = 'unix:///var/opt/gitlab/gitlab-rails/sockets/gitlab.socket'
@@ -2686,7 +2873,7 @@
 # storage_check['log_group'] = nil
 
 ################################################################################
-# Let's Encrypt integration
+## Let's Encrypt integration
 ################################################################################
 # letsencrypt['enable'] = nil
 # letsencrypt['contact_emails'] = [] # This should be an array of email addresses to add as contacts
@@ -2694,12 +2881,13 @@
 # letsencrypt['key_size'] = 2048
 # letsencrypt['owner'] = 'root'
 # letsencrypt['wwwroot'] = '/var/opt/gitlab/nginx/www'
-# See http://docs.gitlab.com/omnibus/settings/ssl.html#automatic-renewal for more on these sesttings
+##! See https://docs.gitlab.com/omnibus/settings/ssl/index.html#renew-the-certificates-automatically for more on these settings
 # letsencrypt['auto_renew'] = true
 # letsencrypt['auto_renew_hour'] = 0
 # letsencrypt['auto_renew_minute'] = nil # Should be a number or cron expression, if specified.
 # letsencrypt['auto_renew_day_of_month'] = "*/4"
 # letsencrypt['auto_renew_log_directory'] = '/var/log/gitlab/lets-encrypt'
+# letsencrypt['alt_names'] = []
 
 ##! Turn off automatic init system detection. To skip init detection in
 ##! non-docker containers. Recommended not to change.
@@ -2723,8 +2911,13 @@
 ##! Note: We do not recommend changing these values unless absolutely necessary
 ##! Set to false to only parse secrets from `gitlab-secrets.json` file but not generate them.
 # package['generate_default_secrets'] = true
-##! Set to false to prevent creating `gitlab-secrets.json` file
+##! Set to false to prevent creating the default `gitlab-secrets.json` file
 # package['generate_secrets_json_file'] = true
+
+##! Settings to control SELinux policy
+##! Experimental. Set to 1.0 to switch from legacy multiple policy modules to
+##! newer single `gitlab` SELinux policy module.
+# package['selinux_policy_version'] = nil
 ################################################################################
 ################################################################################
 ##                  Configuration Settings for GitLab EE only                 ##
@@ -2735,19 +2928,22 @@
 ################################################################################
 ## Auxiliary cron jobs applicable to GitLab EE only
 ################################################################################
-#
+
 # gitlab_rails['geo_repository_sync_worker_cron'] = "*/5 * * * *"
 # gitlab_rails['geo_secondary_registry_consistency_worker'] = "* * * * *"
 # gitlab_rails['geo_secondary_usage_data_cron_worker'] = "0 0 * * 0"
 # gitlab_rails['geo_prune_event_log_worker_cron'] = "*/5 * * * *"
 # gitlab_rails['geo_repository_verification_primary_batch_worker_cron'] = "*/5 * * * *"
 # gitlab_rails['geo_repository_verification_secondary_scheduler_worker_cron'] = "*/5 * * * *"
+# gitlab_rails['geo_metrics_update_worker_cron'] = "*/1 * * * *"
 # gitlab_rails['ldap_sync_worker_cron'] = "30 1 * * *"
 # gitlab_rails['ldap_group_sync_worker_cron'] = "0 * * * *"
 # gitlab_rails['historical_data_worker_cron'] = "0 12 * * *"
 # gitlab_rails['elastic_index_bulk_cron'] = "*/1 * * * *"
 # gitlab_rails['analytics_devops_adoption_create_all_snapshots_worker_cron'] = "0 4 * * 0"
 # gitlab_rails['ci_runners_stale_group_runners_prune_worker_cron'] = "30 * * * *"
+# gitlab_rails['click_house_ci_finished_builds_sync_worker_cron'] = "*/3 * * * *"
+# gitlab_rails['click_house_ci_finished_builds_sync_worker_args'] = [1]
 
 ################################################################################
 ## Kerberos (EE Only)
@@ -2808,7 +3004,7 @@
 
 ################################################################################
 ## GitLab Sentinel (EE Only)
-##! Docs: http://docs.gitlab.com/ce/administration/high_availability/redis.html#high-availability-with-sentinel
+##! Docs: https://docs.gitlab.com/ee/administration/redis/replication_and_failover.html
 ################################################################################
 
 ##! **Make sure you configured all redis['master_*'] keys above before
@@ -2816,7 +3012,7 @@
 
 ##! To enable Sentinel and disable all other services in this machine,
 ##! uncomment the line below (if you've enabled Redis role, it will keep it).
-##! Docs: https://docs.gitlab.com/ee/administration/high_availability/redis.html
+##! Docs: https://docs.gitlab.com/ee/administration/redis/replication_and_failover.html
 # redis_sentinel_role['enable'] = true
 
 # sentinel['enable'] = true
@@ -2830,10 +3026,10 @@
 ##! Uncomment to require a Sentinel password. This may be different from the Redis master password.
 # sentinel['password'] = 'sentinel-password-goes-here'
 
-#### Support to run sentinels in a Docker or NAT environment
-#####! Docs: https://redis.io/topics/sentinel#sentinel-docker-nat-and-possible-issues
-# In an standard case, Sentinel will run in the same network service as Redis, so the same IP will be announce for Redis and Sentinel
-# Only define these values if it is needed to announce for Sentinel a differen IP service than Redis
+### Support to run sentinels in a Docker or NAT environment
+###! Docs: https://redis.io/topics/sentinel#sentinel-docker-nat-and-possible-issues
+###! In an standard case, Sentinel will run in the same network service as Redis, so the same IP will be announce for Redis and Sentinel
+###! Only define these values if it is needed to announce for Sentinel a differen IP service than Redis
 # sentinel['announce_ip'] = nil # If not defined, its value will be taken from redis['announce_ip'] or nil if not present
 # sentinel['announce_port'] = nil # If not defined, its value will be taken from sentinel['port'] or nil if redis['announce_ip'] not present
 
@@ -2910,22 +3106,22 @@
 
 ################################################################################
 ## Additional Database Settings (EE only)
-##! Docs: https://docs.gitlab.com/ee/administration/database_load_balancing.html
+##! Docs: https://docs.gitlab.com/ee/administration/postgresql/database_load_balancing.html
 ################################################################################
 # gitlab_rails['db_load_balancing'] = { 'hosts' => ['secondary1.example.com'] }
 
 ################################################################################
 ## GitLab Geo
-##! Docs: https://docs.gitlab.com/ee/gitlab-geo
+##! Docs: https://docs.gitlab.com/ee/administration/geo/
 ################################################################################
 ##! Geo roles 'geo_primary_role' and 'geo_secondary_role' are set above with
-##! other roles. For more information, see: https://docs.gitlab.com/omnibus/roles/index.html#roles.
+##! other roles. For more information, see: https://docs.gitlab.com/omnibus/roles/index.html#roles .
 
-# This is an optional identifier which Geo nodes can use to identify themselves.
-# For example, if external_url is the same for two secondaries, you must specify
-# a unique Geo node name for those secondaries.
-#
-# If it is blank, it defaults to external_url.
+##! This is an optional identifier which Geo nodes can use to identify themselves.
+##! For example, if external_url is the same for two secondaries, you must specify
+##! a unique Geo node name for those secondaries.
+
+##! If it is blank, it defaults to external_url.
 # gitlab_rails['geo_node_name'] = nil
 
 # gitlab_rails['geo_registry_replication_enabled'] = true
@@ -2972,6 +3168,7 @@
 ## GitLab Geo Log Cursor Daemon (EE only)
 ################################################################################
 
+# geo_logcursor['enable'] = false
 # geo_logcursor['log_directory'] = '/var/log/gitlab/geo-logcursor'
 # geo_logcursor['log_group'] = nil
 
@@ -2987,9 +3184,9 @@
 # gitlab_rails['feature_flags_unleash_instance_id'] = nil
 
 ################################################################################
-# Pgbouncer (EE only)
-# See [GitLab PgBouncer documentation](http://docs.gitlab.com/omnibus/settings/database.html#enabling-pgbouncer-ee-only)
-# See the [PgBouncer page](https://pgbouncer.github.io/config.html) for details
+## Pgbouncer (EE only)
+##! See the GitLab PgBouncer documentation: https://docs.gitlab.com/ee/administration/postgresql/pgbouncer.html
+##! See the PgBouncer page http://www.pgbouncer.org/config.html for details
 ################################################################################
 # pgbouncer['enable'] = false
 # pgbouncer['log_directory'] = '/var/log/gitlab/pgbouncer'
@@ -3002,6 +3199,7 @@
 # pgbouncer['listen_addr'] = '0.0.0.0'
 # pgbouncer['listen_port'] = '6432'
 # pgbouncer['pool_mode'] = 'transaction'
+# pgbouncer['max_prepared_statements'] = 0
 # pgbouncer['server_reset_query'] = 'DISCARD ALL'
 # pgbouncer['application_name_add_host'] = '1'
 # pgbouncer['max_client_conn'] = '2048'
@@ -3018,13 +3216,14 @@
 # pgbouncer['admin_users'] = %w(gitlab-psql postgres pgbouncer)
 # pgbouncer['stats_users'] = %w(gitlab-psql postgres pgbouncer)
 # pgbouncer['ignore_startup_parameters'] = 'extra_float_digits'
+# pgbouncer['track_extra_parameters'] = %w(IntervalStyle)
 # pgbouncer['databases'] = {
 #   DATABASE_NAME: {
 #     host: HOSTNAME,
 #     port: PORT
 #     user: USERNAME,
 #     password: PASSWORD
-###! generate this with `echo -n '$password + $username' | md5sum`
+##! generate this with `echo -n '$password + $username' | md5sum`
 #   }
 #   ...
 # }
@@ -3034,6 +3233,7 @@
 # pgbouncer['unix_socket_group'] = nil
 # pgbouncer['auth_type'] = 'md5'
 # pgbouncer['auth_hba_file'] = nil
+# pgbouncer['auth_dbname'] = nil
 # pgbouncer['auth_query'] = 'SELECT username, password FROM public.pg_shadow_lookup($1)'
 # pgbouncer['users'] = {
 #   USERNAME: {
@@ -3064,10 +3264,12 @@
 # pgbouncer['autodb_idle_timeout'] = 3600
 # pgbouncer['suspend_timeout'] = 10
 # pgbouncer['idle_transaction_timeout'] = 0
+# pgbouncer['cancel_wait_timeout'] = 10
 # pgbouncer['pkt_buf'] = 4096
 # pgbouncer['listen_backlog'] = 128
 # pgbouncer['sbuf_loopcnt'] = 5
 # pgbouncer['max_packet_size'] = 2147483647
+# pgbouncer['so_reuseport'] = 0
 # pgbouncer['tcp_defer_accept'] = 0
 # pgbouncer['tcp_socket_buffer'] = 0
 # pgbouncer['tcp_keepalive'] = 1
@@ -3075,8 +3277,9 @@
 # pgbouncer['tcp_keepidle'] = 0
 # pgbouncer['tcp_keepintvl'] = 0
 # pgbouncer['disable_pqexec'] = 0
+# default['pgbouncer']['peers'] = {}
 
-## Pgbouncer client TLS options
+### Pgbouncer client TLS options
 # pgbouncer['client_tls_sslmode'] = 'disable'
 # pgbouncer['client_tls_ca_file'] = nil
 # pgbouncer['client_tls_key_file'] = nil
@@ -3085,7 +3288,7 @@
 # pgbouncer['client_tls_dheparams'] = 'auto'
 # pgbouncer['client_tls_ecdhcurve'] = 'auto'
 #
-## Pgbouncer server  TLS options
+### Pgbouncer server  TLS options
 # pgbouncer['server_tls_sslmode'] = 'disable'
 # pgbouncer['server_tls_ca_file'] = nil
 # pgbouncer['server_tls_key_file'] = nil
@@ -3094,14 +3297,14 @@
 # pgbouncer['server_tls_ciphers'] = 'fast'
 
 ################################################################################
-# Patroni (EE only)
+## Patroni (EE only)
 ################################################################################
 # patroni['enable'] = false
 
 # patroni['dir'] = '/var/opt/gitlab/patroni'
 # patroni['ctl_command'] = '/opt/gitlab/embedded/bin/patronictl'
 
-## Patroni dynamic configuration settings
+### Patroni dynamic configuration settings
 # patroni['loop_wait'] = 10
 # patroni['ttl'] = 30
 # patroni['retry_timeout'] = 10
@@ -3118,32 +3321,32 @@
 # patroni['recovery_conf'] = {}
 # patroni['tags'] = {}
 
-## Standby cluster replication settings
+### Standby cluster replication settings
 # patroni['standby_cluster']['enable'] = false
 # patroni['standby_cluster']['host'] = nil
 # patroni['standby_cluster']['port'] = 5432
 # patroni['standby_cluster']['primary_slot_name'] = nil
 
-## Global/Universal settings
+### Global/Universal settings
 # patroni['scope'] = 'gitlab-postgresql-ha'
 # patroni['name'] = nil
 
-## Log settings
+### Log settings
 # patroni['log_directory'] = '/var/log/gitlab/patroni'
 # patroni['log_group'] = nil
 # patroni['log_level'] = 'INFO'
 
-## Consul specific settings
+### Consul specific settings
 # patroni['consul']['url'] = 'http://127.0.0.1:8500'
 # patroni['consul']['service_check_interval'] = '10s'
 # patroni['consul']['register_service'] = true
 # patroni['consul']['checks'] = []
 
-## PostgreSQL configuration override
+### PostgreSQL configuration override
 # patroni['postgresql']['hot_standby'] = 'on'
 
-## The following must hold the same values on all nodes.
-## Leave unassined to use PostgreSQL's default values.
+###! The following must hold the same values on all nodes.
+###! Leave unassined to use PostgreSQL's default values.
 # patroni['postgresql']['wal_level'] = 'replica'
 # patroni['postgresql']['wal_log_hints'] = 'on'
 # patroni['postgresql']['max_worker_processes'] = 8
@@ -3151,44 +3354,44 @@
 # patroni['postgresql']['max_connections'] = 400
 # patroni['postgresql']['checkpoint_timeout'] = 30
 
-## The following can hold different values on all nodes.
-## Leave unassined to use PostgreSQL's default values.
+###! The following can hold different values on all nodes.
+###! Leave unassined to use PostgreSQL's default values.
 # patroni['postgresql']['wal_keep_segments'] = 8
 # patroni['postgresql']['max_wal_senders'] = 5
 # patroni['postgresql']['max_replication_slots'] = 5
 
-## Permanent replication slots for Streaming Replication
+### Permanent replication slots for Streaming Replication
 # patroni['replication_slots'] = {
 #   'geo_secondary' => { 'type' => 'physical' }
 # }
 
-## The address and port that Patroni API binds to and listens on.
+###! The address and port that Patroni API binds to and listens on.
 # patroni['listen_address'] = nil
 # patroni['port'] = '8008'
 
-## The address of the Patroni node that is advertized to other cluster
-## members to communicate with its API and PostgreSQL. If it is not specified,
-## it tries to use the first available private IP and falls back to the default
-## network interface.
+###! The address of the Patroni node that is advertized to other cluster
+###! members to communicate with its API and PostgreSQL. If it is not specified,
+###! it tries to use the first available private IP and falls back to the default
+###! network interface.
 # patroni['connect_address'] = nil
 
-## The port that Patroni API responds to other cluster members. This port is
-## advertized and by default is the same as patroni['port'].
+###! The port that Patroni API responds to other cluster members. This port is
+###! advertized and by default is the same as patroni['port'].
 # patroni['connect_port'] = '8008'
 
-## Specifies the set of hosts that are allowed to call unsafe REST API endpoints.
-## Each item can be an hostname, IP address, or CIDR address.
-## All hosts are allowed if this is unset.
+###! Specifies the set of hosts that are allowed to call unsafe REST API endpoints.
+###! Each item can be an hostname, IP address, or CIDR address.
+###! All hosts are allowed if this is unset.
 # patroni['allowlist'] = []
 # patroni['allowlist_include_members'] = false
 
-## The username and password to use for basic auth on write commands to the
-## Patroni API. If not specified then the API does not use basic auth.
+###! The username and password to use for basic auth on write commands to the
+###! Patroni API. If not specified then the API does not use basic auth.
 # patroni['username'] = nil
 # patroni['password'] = nil
 
-## TLS configuration for Patroni API. Both certificate and key files are
-## required to enable TLS. If not specified then the API uses plain HTTP.
+###! TLS configuration for Patroni API. Both certificate and key files are
+###! required to enable TLS. If not specified then the API uses plain HTTP.
 # patroni['tls_certificate_file'] = nil
 # patroni['tls_key_file'] = nil
 # patroni['tls_key_password'] = nil
@@ -3200,9 +3403,10 @@
 # patroni['tls_verify'] = true
 
 ################################################################################
-# Consul (EEP only)
+## Consul (EE only)
 ################################################################################
 # consul['enable'] = false
+# consul['binary_path'] = '/opt/gitlab/embedded/bin/consul'
 # consul['dir'] = '/var/opt/gitlab/consul'
 # consul['username'] = 'gitlab-consul'
 # consul['group'] = 'gitlab-consul'
@@ -3221,7 +3425,8 @@
 # consul['configuration'] = {
 #   'client_addr' => nil,
 #   'datacenter' => 'gitlab_consul',
-#   'enable_script_checks' => true,
+#   'enable_script_checks' => false,
+#   'enable_local_script_checks' => true,
 #   'server' => false
 # }
 # consul['services'] = []
@@ -3241,20 +3446,18 @@
 #   }
 # }
 # consul['watchers'] = []
-#
 # consul['custom_config_dir'] = '/path/to/service/configs/directory'
-#
 
-#### HTTP API ports
+### HTTP API ports
 # consul['http_port'] = nil
 # consul['https_port'] = nil
 
-#### Gossip encryption
+### Gossip encryption
 # consul['encryption_key'] = nil
 # consul['encryption_verify_incoming'] = nil
 # consul['encryption_verify_outgoing'] = nil
 
-#### TLS settings
+### TLS settings
 # consul['use_tls'] = false
 # consul['tls_ca_file'] = nil
 # consul['tls_certificate_file'] = nil
@@ -3262,12 +3465,12 @@
 # consul['tls_verify_client'] = nil
 
 ################################################################################
-# Service desk email settings
+## Service desk email settings
 ################################################################################
 ### Service desk email
 ###! Allow users to create new service desk issues by sending an email to
 ###! service desk address.
-###! Docs: https://docs.gitlab.com/ee/user/project/service_desk.html
+###! Docs: https://docs.gitlab.com/ee/user/project/service_desk/index.html
 # gitlab_rails['service_desk_email_enabled'] = false
 
 #### Service Desk Mailbox Settings (via `mail_room`)
@@ -3309,15 +3512,15 @@
 #    'poll_interval': 60  # Optional
 # }
 
-#### How service desk emails are delivered to Rails process. Accept either
-#### sidekiq or webhook. The default config is webhook.
+####! How service desk emails are delivered to Rails process. Accept either
+####! sidekiq or webhook. The default config is webhook.
 # gitlab_rails['service_desk_email_delivery_method'] = "webhook"
 
-#### Token to authenticate webhook requests. The token must be exactly 32 bytes,
-#### encoded with base64
+####! Token to authenticate webhook requests. The token must be exactly 32 bytes,
+####! encoded with base64
 # gitlab_rails['service_desk_email_auth_token'] = nil
 
-################################################################################
+#################################################################################
 ## Spamcheck (EE only)
 #################################################################################
 
@@ -3339,3 +3542,19 @@
 #   'SSL_CERT_DIR' => '/opt/gitlab/embedded/ssl/cers'
 # }
 # spamcheck['classifier']['log_directory'] = "/var/log/gitlab/spam-classifier"
+
+#################################################################################
+## (Go-)Crond
+#################################################################################
+# crond['log_directory'] = '/var/log/gitlab/crond'
+# crond['cron_d'] = '/var/opt/gitlab/crond'
+# crond['flags'] = {}
+
+#################################################################################
+## gitlab-backup-cli settings
+#################################################################################
+# gitlab_backup_cli['enable'] = false
+# gitlab_backup_cli['user'] = 'gitlab-backup'
+# gitlab_backup_cli['group'] = 'gitlab-backup'
+# gitlab_backup_cli['dir'] = '/var/opt/gitlab/backups'
+# gitlab_backup_cli['additional_groups'] = %w[git gitlab-psql registry]
