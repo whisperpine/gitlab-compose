@@ -1,13 +1,14 @@
-# README
+# GitLab Docker Compose
 
 Deploy [GitLab](https://about.gitlab.com/) in your office and access it anywhere.
 
 ## File Notes
 
 - [gitlab.rb](./gitlab.rb) is duplicated from */opt/gitlab/etc/gitlab.rb.template*
-(version v18.1.2-ee), which may be a handy reference.
-- [setup-network.sh](./setup-network.sh) demonstrates how to create a docker network
-with the [macvlan](https://docs.docker.com/network/drivers/macvlan/) driver type.
+(version v18.1.2-ee), as a handy reference.
+- [setup-network.sh](./scripts/setup-network.sh) demonstrates how to create a
+  docker network with the
+  [macvlan](https://docs.docker.com/network/drivers/macvlan/) driver type.
 - [example.env](./example.env) is a template which is expected to be copied as
 the `.env` file and edited further.
 
