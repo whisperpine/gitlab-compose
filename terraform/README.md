@@ -1,15 +1,15 @@
 # README
 
-Setup Cloudflare Tunnel by Terraform.
+Setup Cloudflare Tunnel by
+[Terraform](https://github.com/hashicorp/terraform)
+or [OpenTofu](https://github.com/opentofu/opentofu).
 
 ## Prerequisites
 
 - A domain hosted by Cloudflare DNS.
 - An organization on Cloudflare Zero Trust.
-- Terraform of [OpenTofu](https://opentofu.org/) is installed
-(`terraform` or `tofu` command is available).\
-If OpenTofu is used, substitute `tofu` for
-`terraform` in the commands hereafter.
+- OpenTofu or Terraform is installed.
+(Commands use `tofu` or `terraform` interchangeably hereafter).
 
 ## Get Started
 
@@ -19,8 +19,8 @@ If OpenTofu is used, substitute `tofu` for
 
 ```sh
 cd [terraform-dir]
-terraform init
-terraform apply -auto-approve
+tofu init
+tofu apply -auto-approve
 ```
 
 ## API Token
@@ -39,7 +39,7 @@ Run the following command to get tunnel token:
 
 ```sh
 cd [terraform-dir]
-terraform output tunnel_token
+tofu output tunnel_token
 ```
 
 Tunnel Token should be assigned to `CLOUDFLARED_TOKEN` in `.env` file.
