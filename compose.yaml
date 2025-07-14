@@ -14,7 +14,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       # Cron file used to backup gitlab periodically
-      - ./backup-cron:/etc/cron.d/backup-cron:ro
+      - ./mounted-files/backup-cron:/etc/cron.d/backup-cron:ro
       - gitlab-config:/etc/gitlab
       - gitlab-logs:/var/log/gitlab
       - gitlab-data:/var/opt/gitlab
