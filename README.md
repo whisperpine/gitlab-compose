@@ -17,7 +17,7 @@ the `.env` file and edited further.
 [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 provides a secure way to host without a public IP address.
 It's recommended to set up infrastructures like Cloudflare Tunnel by [Terraform](https://www.terraform.io/).
-Read more in [terraform/README.md](./terraform/README.md).
+Read more in [infra/README.md](./infra/README.md).
 
 ## Feature Flags
 

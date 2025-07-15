@@ -1,0 +1,17 @@
+stores:
+  yaml:
+    indent: 2
+keys:
+  - &yusong age19wm0azdvywzdssmcp74us8ty4pkjmm8am8fnlarkp36eknuyv4ssfaxwc6
+  - &github_actions age12rsd5szed0hjdahpgca5t6rm33qtu3m9y9fcn7lqkl99anz7zu9qvy3d3h
+creation_rules:
+  - path_regex: ^infra\/encrypted\.tfvars\.json$
+    key_groups:
+      - age:
+          - *yusong
+          - *github_actions
+  - path_regex: ^infra\/tfplan$
+    key_groups:
+      - age:
+          - *yusong
+          - *github_actions

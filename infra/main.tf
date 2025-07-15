@@ -1,75 +1,25 @@
-# Generates a 64-character secret for the tunnel.
-# Using `random_password` means the result is treated as sensitive and, thus,
-# not displayed in console output. Refer to: https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password
-resource "random_password" "tunnel_secret" {
-  length = 64
+# sops_file data docs:
+# https://registry.terraform.io/providers/carlpett/sops/latest/docs/data-sources/file
+data "sops_file" "default" {
+  source_file = "encrypted.tfvars.json"
 }
 
-# cloudflare_zero_trust_tunnel_cloudflared resource docs:
-# https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/zero_trust_tunnel_cloudflared
-resource "cloudflare_zero_trust_tunnel_cloudflared" "default" {
-  account_id = var.cloudflare_account_id
-  name       = var.cloudflare_tunnel_name
-  # secret = base64sha256(random_password.tunnel_secret.result)
+locals {
+  cloudflare_token           = data.sops_file.default.data["cloudflare_token"]
+  cloudflare_zone            = data.sops_file.default.data["cloudflare_zone"]
+  cloudflare_zone_id         = data.sops_file.default.data["cloudflare_zone_id"]
+  cloudflare_account_id      = data.sops_file.default.data["cloudflare_account_id"]
+  cloudflare_tunnel_name     = data.sops_file.default.data["cloudflare_tunnel_name"]
+  dns_record_prefix_gitlab   = data.sops_file.default.data["dns_record_prefix_gitlab"]
+  dns_record_prefix_registry = data.sops_file.default.data["dns_record_prefix_registry"]
 }
 
-# cloudflare_zero_trust_tunnel_cloudflared_token data docs:
-# https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/data-sources/zero_trust_tunnel_cloudflared
-data "cloudflare_zero_trust_tunnel_cloudflared_token" "default" {
-  account_id = var.cloudflare_account_id
-  tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.default.id
-}
-
-# cloudflare_dns_record resource docs:
-# https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/dns_record
-resource "cloudflare_dns_record" "gitlab" {
-  zone_id = var.cloudflare_zone_id
-  name    = var.dns_record_prefix_gitlab
-  content = "${cloudflare_zero_trust_tunnel_cloudflared.default.id}.cfargotunnel.com"
-  comment = "gitlab main site"
-  type    = "CNAME"
-  proxied = true
-  ttl     = 1 # setting to 1 means automatic
-}
-
-# cloudflare_dns_record resource docs:
-# https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/dns_record
-resource "cloudflare_dns_record" "registry" {
-  zone_id = var.cloudflare_zone_id
-  name    = var.dns_record_prefix_registry
-  content = "${cloudflare_zero_trust_tunnel_cloudflared.default.id}.cfargotunnel.com"
-  comment = "gitlab container registry"
-  type    = "CNAME"
-  proxied = true
-  ttl     = 1 # setting to 1 means automatic
-}
-
-# cloudflare_zero_trust_tunnel_cloudflared_config docs:
-# https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/zero_trust_tunnel_cloudflared_config
-resource "cloudflare_zero_trust_tunnel_cloudflared_config" "default" {
-  tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.default.id
-  account_id = var.cloudflare_account_id
-  config = {
-    ingress = [
-      {
-        hostname = "${cloudflare_dns_record.gitlab.name}.${var.cloudflare_zone}"
-        service  = "https://gitlab"
-        origin_request = {
-          no_tls_verify = true
-        }
-      },
-      {
-        hostname = "${cloudflare_dns_record.registry.name}.${var.cloudflare_zone}"
-        service  = "https://gitlab"
-        origin_request = {
-          no_tls_verify = true
-        }
-      },
-      # The last ingress rule must match all URLs.
-      # (i.e. it should not have a hostname or path filter)
-      {
-        service = "http_status:404"
-      },
-    ]
-  }
+module "cloudflare_tunnel" {
+  source                     = "./cloudflare-tunnel"
+  cloudflare_zone            = local.cloudflare_zone
+  cloudflare_zone_id         = local.cloudflare_zone_id
+  cloudflare_account_id      = local.cloudflare_account_id
+  cloudflare_tunnel_name     = local.cloudflare_tunnel_name
+  dns_record_prefix_gitlab   = local.dns_record_prefix_gitlab
+  dns_record_prefix_registry = local.dns_record_prefix_registry
 }
