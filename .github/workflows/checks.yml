@@ -23,4 +23,4 @@ jobs:
       - uses: cachix/install-nix-action@v31
       - name: Run tflint command
         shell: nix shell nixpkgs#tflint --quiet --command bash {0}
-        run: tflint --chdir ./terraform --recursive
+        run: tflint --chdir ./infra --recursive
