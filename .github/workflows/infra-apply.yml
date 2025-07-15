@@ -20,8 +20,8 @@ jobs:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
         run: |
           tofu init
-          tofu validate -no-color
-          tofu plan -no-color -out=tfplan
+          tofu validate
+          tofu plan -out=tfplan
       - uses: cachix/install-nix-action@v31
       - name: Encrypt OpenTofu plan file
         env:
@@ -66,4 +66,4 @@ jobs:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
         run: |
           tofu init
-          tofu apply -no-color tfplan
+          tofu apply tfplan
