@@ -1,6 +1,6 @@
 # GitLab Docker Compose
 
-Deploy [GitLab](https://about.gitlab.com/) in your office and access it anywhere.
+Self-host [GitLab](https://about.gitlab.com/) in your office and access it everywhere.
 
 If you want to self-host GitLab in your office or on-premise data center, and
 access from anywhere, with zero cloud cost, you come to the right place. While
@@ -11,6 +11,8 @@ flowchart LR
   pub("Access from WAN")
   private("Access from LAN")
   cf("Cloudflare edge nodes")
+  s3("AWS S3")
+  ses("AWS SES")
 
   pub -.-> cf
   cf ---|tunnel| cloudflared
@@ -23,12 +25,15 @@ flowchart LR
 
   private -...-> gitlab
 
+  gitlab -.-|auto backup| s3
+  gitlab -.-|email service| ses
+
   classDef red_stroke stroke: #f66
 ```
 
 ## Get Started
 
-- Setup infrastructure by [Terraform](https://github.com/hashicorp/terraform)
+- Setup infrastructure by Terraform(<https://github.com/hashicorp/terraform>)
   or [OpenTofu](https://github.com/opentofu/opentofu) (see [infra/README.md](./infra/README.md)).
 - Config environment variables in `.env` file (refer to [example.env](./example.env)).
 - Setup docker macvlan network by [./scripts/setup-network.sh](./scripts/setup-network.sh).
