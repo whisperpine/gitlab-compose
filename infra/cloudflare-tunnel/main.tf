@@ -5,18 +5,7 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5.7.0"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.7.2"
-    }
   }
-}
-
-# Generates a 64-character secret for the tunnel.
-# Using `random_password` means the result is treated as sensitive and, thus,
-# not displayed in console output. Refer to: https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password
-resource "random_password" "tunnel_secret" {
-  length = 64
 }
 
 # cloudflare_zero_trust_tunnel_cloudflared resource docs:

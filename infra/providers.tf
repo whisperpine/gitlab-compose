@@ -23,10 +23,6 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5.7.0"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.7.2"
-    }
   }
 }
 
@@ -35,10 +31,6 @@ terraform {
 provider "cloudflare" {
   api_token = local.cloudflare_token
 }
-
-# hashicorp/random provider docs:
-# https://registry.terraform.io/providers/hashicorp/random/latest/docs
-provider "random" {}
 
 # carlpett/sops provider docs: 
 # https://registry.terraform.io/providers/carlpett/sops/latest/docs
