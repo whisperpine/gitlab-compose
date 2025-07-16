@@ -2,6 +2,38 @@
 
 Deploy [GitLab](https://about.gitlab.com/) in your office and access it anywhere.
 
+If you want to self-host GitLab in your office or on-premise data center, and
+access from anywhere, with zero cloud cost, you come to the right place. While
+this repository is tailored for my use cases, it may help you get started.
+
+```mermaid
+flowchart LR
+  pub("Access from WAN")
+  private("Access from LAN")
+  cf("Cloudflare edge nodes")
+
+  pub -.-> cf
+  cf ---|tunnel| cloudflared
+
+  subgraph Docker Compose
+    cloudflared("Cloudflared")
+    gitlab("GitLab"):::red_stroke
+    cloudflared --- gitlab
+  end
+
+  private -...-> gitlab
+
+  classDef red_stroke stroke: #f66
+```
+
+## Get Started
+
+- Setup infrastructure by [Terraform](https://github.com/hashicorp/terraform)
+  or [OpenTofu](https://github.com/opentofu/opentofu) (see [infra/README.md](./infra/README.md)).
+- Config environment variables in `.env` file (refer to [example.env](./example.env)).
+- Setup docker macvlan network by [./scripts/setup-network.sh](./scripts/setup-network.sh).
+- Run `docker compose up -d` to spin up services.
+
 ## File Notes
 
 - [gitlab.rb](./gitlab.rb) is duplicated from */opt/gitlab/etc/gitlab.rb.template*
