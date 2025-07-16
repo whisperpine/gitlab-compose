@@ -1,4 +1,4 @@
-# README
+# Infrastructure as Code
 
 Setup Cloudflare Tunnel by
 [Terraform](https://github.com/hashicorp/terraform)
@@ -18,7 +18,7 @@ or [OpenTofu](https://github.com/opentofu/opentofu).
 - Run the following commands:
 
 ```sh
-cd [terraform-dir]
+cd INFRA_DIR
 tofu init
 tofu apply -auto-approve
 ```
@@ -38,7 +38,7 @@ API Token minimal permissions:
 Run the following command to get tunnel token:
 
 ```sh
-cd [terraform-dir]
+cd INFRA_DIR
 tofu output tunnel_token
 ```
 
