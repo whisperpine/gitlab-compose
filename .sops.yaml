@@ -15,3 +15,7 @@ creation_rules:
       - age:
           - *yusong
           - *github_actions
+  - path_regex: ^encrypted\.env$
+    key_groups:
+      - age:
+          - *yusong
