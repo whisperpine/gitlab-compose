@@ -1,3 +1,18 @@
+networks:
+  cloudflared:
+  macvlan:
+    driver: macvlan
+    name: ${MACVLAN_NETWORK_NAME}
+    external: true
+
+volumes:
+  gitlab-data:
+    name: gitlab-data
+  gitlab-logs:
+    name: gitlab-logs
+  gitlab-config:
+    name: gitlab-config
+
 services:
   cloudflared:
     image: cloudflare/cloudflared
@@ -73,18 +88,3 @@ services:
           'aws_access_key_id' => '${BACKUP_AWS_ACCESS_KEY_ID}',
           'aws_secret_access_key' => '${BACKUP_AWS_SECRET_ACCESS_KEY}'
         }
-
-networks:
-  cloudflared:
-  macvlan:
-    driver: macvlan
-    name: ${MACVLAN_NETWORK_NAME}
-    external: true
-
-volumes:
-  gitlab-data:
-    name: gitlab-data
-  gitlab-logs:
-    name: gitlab-logs
-  gitlab-config:
-    name: gitlab-config
