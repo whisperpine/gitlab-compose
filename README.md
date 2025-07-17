@@ -33,7 +33,7 @@ flowchart LR
 
 ## Get Started
 
-- Setup infrastructure by Terraform(<https://github.com/hashicorp/terraform>)
+- Setup infrastructure by [Terraform](<https://github.com/hashicorp/terraform>)
   or [OpenTofu](https://github.com/opentofu/opentofu) (see [infra/README.md](./infra/README.md)).
 - Config environment variables in `.env` file (refer to [example.env](./example.env)).
 - Setup docker macvlan network by [./scripts/setup-network.sh](./scripts/setup-network.sh).
