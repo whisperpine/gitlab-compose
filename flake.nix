@@ -22,7 +22,10 @@
         {
           default = pkgs.mkShell {
             # The Nix packages provided in the environment.
-            packages = with pkgs; [ opentofu ];
+            packages = with pkgs; [
+              opentofu
+              sops
+            ];
           };
         }
       );

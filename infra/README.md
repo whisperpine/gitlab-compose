@@ -4,57 +4,61 @@ Setup Cloudflare Tunnel by
 [Terraform](https://github.com/hashicorp/terraform)
 or [OpenTofu](https://github.com/opentofu/opentofu).
 
-## Prerequisites
+Terraform and OpenTofu can be used interchangeably at the moment.
 
-- A domain hosted by Cloudflare DNS.
-- An organization on Cloudflare Zero Trust.
-- OpenTofu or Terraform is installed.
-(Commands use `tofu` or `terraform` interchangeably hereafter).
+## Terraform Modules
 
-## Get Started
+- [aws-s3](./aws-s3/README.md):
+  Create an AWS S3 bucket.
+  Add an IAM user with write permission to the bucket.
+- [cloudflare-tunnel](./cloudflare-tunnel/README.md):
+  Create a Cloudflare Tunnel.
+  Add correlated DNS records.
 
-- Create an API Token with [proper permissions](#api-token).
-- Configure variables in `terraform.tfvars` file (create if missing).
-- Run the following commands:
+## Terraform Remote Backend
 
-```sh
-cd INFRA_DIR
-tofu init
-tofu apply -auto-approve
+[Terraform S3 backend](https://developer.hashicorp.com/terraform/language/backend/s3)
+is used in this repo (the actual backend is Cloudflare R2 which is
+s3-compatibal). Hence a Cloudflare R2 bucket should be created beforehand, as
+well as an API Token with write permission to the bucket.
+Refer to [Remote R2 backend - Cloudflare Docs](https://developers.cloudflare.com/terraform/advanced-topics/remote-backend/).
+
+The credentials of the API Token shouldn't be configured directly in the
+[./providers.tf](./providers.tf) for security considerations. Instead use
+environment variable: `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+(both locally and in CI).
+
+## SOPS Encryption
+
+The input variables of root module are stored in [./encrypted.default.json](./encrypted.default.json)
+encrypted by [sops](https://github.com/getsops/sops) using [age](https://github.com/FiloSottile/age).
+The file naming should follow `encrypted.${terraform.workspace}.json` for different
+[Workspaces](https://opentofu.org/docs/language/state/workspaces/).
+
+Terraform Provider [carlpett/sops](https://registry.terraform.io/providers/carlpett/sops/latest)
+can read values from sops-encrypted files automatically if credentials are
+accessible and correct. For example, in CI/CD pipelines, provide age private key
+by `SOPS_AGE_KEY`:
+
+```yaml
+# GitHub Actions Workflow.
+env:
+  SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 ```
 
-## API Token
+## Terraform Outputs
 
-API Token minimal permissions:
-
-| Permission type | Permission | Access level |
-| - | - | - |
-| Account | Cloudflare Tunnel | Edit |
-| Account | Access: Apps and Policies | Edit |
-| Zone | DNS | Edit |
-
-## Tunnel Token
-
-Run the following command to get tunnel token:
+Read the descriptions in [./outputs.tf](./outputs.tf)
+to learn how to use each output.
 
 ```sh
 cd INFRA_DIR
+# List all outputs with value masked by <sensitive>.
+tofu output 
+# Get the value by their explicit names.
+tofu output iam_access_key_id 
+tofu output iam_secret_access_key 
+tofu output s3_bucket_name 
+tofu output s3_bucket_name 
 tofu output tunnel_token
 ```
-
-Tunnel Token should be assigned to `CLOUDFLARED_TOKEN` in `.env` file.
-
-## Notes
-
-All the hostnames should target at `https://gitlab`,
-including gitlab and container registry.
-
-Enable *No TLS Verify* in public hostname configs, if *https* is used in `EXTERNAL_URL`.\
-Because the server-side TLS cert is managed by gitlab-integrated service,
-not provided by Cloudflare.
-
-## References
-
-- [Cloudflare Terraform - Cloudflare Docs](https://developers.cloudflare.com/terraform/).
-- [Deploy Tunnels with Terraform - Cloudflare Docs](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/deployment-guides/terraform/).
-- [Cloudflare Provider - Terraform Registry](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs).

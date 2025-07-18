@@ -14,7 +14,6 @@ jobs:
       - uses: opentofu/setup-opentofu@v1
       - name: Run OpenTofu commands
         env:
-          AWS_ENDPOINT_URL_S3: ${{ secrets.AWS_ENDPOINT_URL_S3 }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
@@ -60,7 +59,6 @@ jobs:
       - uses: opentofu/setup-opentofu@v1
       - name: Run OpenTofu commands
         env:
-          AWS_ENDPOINT_URL_S3: ${{ secrets.AWS_ENDPOINT_URL_S3 }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}

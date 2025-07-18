@@ -5,7 +5,7 @@ keys:
   - &yusong age19wm0azdvywzdssmcp74us8ty4pkjmm8am8fnlarkp36eknuyv4ssfaxwc6
   - &github_actions age12rsd5szed0hjdahpgca5t6rm33qtu3m9y9fcn7lqkl99anz7zu9qvy3d3h
 creation_rules:
-  - path_regex: ^infra\/encrypted\.tfvars\.json$
+  - path_regex: ^infra\/encrypted\..*\.json$
     key_groups:
       - age:
           - *yusong
