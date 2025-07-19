@@ -15,6 +15,26 @@ resource "aws_s3_bucket" "bucket" {
   region = var.s3_bucket_region
 }
 
+# S3 lifetime policy.
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration
+resource "aws_s3_bucket_lifecycle_configuration" "default" {
+  bucket = aws_s3_bucket.bucket.id
+  rule {
+    id     = "glacier-deep-archive_expire-after-180-days"
+    status = "Enabled"
+    filter {}
+    # Transition to DEEP_ARCHIVE after 1 day
+    transition {
+      days          = 1
+      storage_class = "DEEP_ARCHIVE"
+    }
+    # Expire (delete) objects after 180 days.
+    expiration {
+      days = 180
+    }
+  }
+}
+
 # IAM User.
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user
 resource "aws_iam_user" "s3_user" {
