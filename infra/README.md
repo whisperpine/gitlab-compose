@@ -13,6 +13,8 @@ Terraform and OpenTofu can be used interchangeably at the moment.
 - [aws-s3](./aws-s3/README.md):
   Create an AWS S3 bucket.
   Add an IAM user with write permission to the bucket.
+- [aws-ses](./aws-ses/README.md):
+  Create AWS SES identities and configure DNS records on Cloudflare.
 - [cloudflare-tunnel](./cloudflare-tunnel/README.md):
   Create a Cloudflare Tunnel.
   Add correlated DNS records.
@@ -57,10 +59,6 @@ to learn how to use each output.
 cd INFRA_DIR
 # List all outputs with value masked by <sensitive>.
 tofu output 
-# Get the value by their explicit names.
-tofu output iam_access_key_id 
-tofu output iam_secret_access_key 
-tofu output s3_bucket_name 
-tofu output s3_bucket_name 
+# Get the value by their explicit names. For example:
 tofu output tunnel_token
 ```

@@ -8,13 +8,13 @@ output "iam_user_name" {
   value       = aws_iam_user.s3_user.name
 }
 
-output "iam_access_key_id" {
+output "s3_access_key_id" {
   description = "Access Key ID for the IAM user"
   value       = aws_iam_access_key.s3_user_key.id
   sensitive   = true
 }
 
-output "iam_secret_access_key" {
+output "s3_secret_access_key" {
   description = "Secret Access Key for the IAM user"
   value       = aws_iam_access_key.s3_user_key.secret
   sensitive   = true
