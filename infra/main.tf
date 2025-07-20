@@ -5,6 +5,12 @@ data "sops_file" "default" {
 }
 
 locals {
+  # tags for hashicorp/aws provider
+  repository = "gitlab-compose"
+  default_tags = {
+    tf-workspace  = terraform.workspace
+    tf-repository = local.repository
+  }
   # provider: cloudflare/cloudflare 
   cloudflare_token = data.sops_file.default.data["cloudflare_token"]
   # provider: hashicorp/aws 
@@ -31,6 +37,13 @@ module "cloudflare_tunnel" {
   cloudflare_tunnel_name     = local.cloudflare_tunnel_name
   dns_record_prefix_gitlab   = local.dns_record_prefix_gitlab
   dns_record_prefix_registry = local.dns_record_prefix_registry
+}
+
+# Create commonly used aws resources (e.g. aws resource group).
+module "aws_common" {
+  source                  = "./aws-common"
+  aws_resource_group_name = "${local.repository}-${terraform.workspace}"
+  default_tags            = local.default_tags
 }
 
 # Create an AWS S3 bucket. Add an IAM user with write permission to the bucket.

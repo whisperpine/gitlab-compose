@@ -8,6 +8,8 @@ Terraform and OpenTofu can be used interchangeably at the moment.
 
 ## Terraform Modules
 
+- [aws-common](./aws-common/README.md):
+  Create commonly used aws resources (e.g. aws resource group).
 - [aws-s3](./aws-s3/README.md):
   Create an AWS S3 bucket.
   Add an IAM user with write permission to the bucket.

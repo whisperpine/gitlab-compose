@@ -50,9 +50,6 @@ provider "aws" {
   access_key = local.aws_access_key_id
   secret_key = local.aws_secret_access_key
   default_tags {
-    tags = {
-      tf-workspace  = terraform.workspace
-      tf-repository = "gitlab-compose"
-    }
+    tags = local.default_tags
   }
 }
