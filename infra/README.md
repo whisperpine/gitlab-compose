@@ -2,9 +2,8 @@
 
 Setup Cloudflare Tunnel by
 [Terraform](https://github.com/hashicorp/terraform)
-or [OpenTofu](https://github.com/opentofu/opentofu).
-
-Terraform and OpenTofu can be used interchangeably at the moment.
+or [OpenTofu](https://github.com/opentofu/opentofu)
+(which can be used interchangeably at the moment).
 
 ## Terraform Modules
 
