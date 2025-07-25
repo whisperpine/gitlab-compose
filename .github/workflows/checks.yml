@@ -1,6 +1,7 @@
 name: Check by linters
 
 on:
+  pull_request:
   push:
     branches: ["main"]
 
@@ -24,3 +25,21 @@ jobs:
       - name: Run tflint command
         shell: nix shell nixpkgs#tflint --quiet --command bash {0}
         run: tflint --chdir ./infra --recursive
+
+  tofu:
+    runs-on: ubuntu-latest
+    name: tofu init and validate
+    defaults:
+      run:
+        working-directory: ./infra # Set working directory for apply job.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+      - name: Run OpenTofu commands
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+        run: |
+          tofu init
+          tofu validate
