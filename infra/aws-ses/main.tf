@@ -31,14 +31,6 @@ resource "aws_ses_domain_identity_verification" "default" {
   domain = aws_ses_domain_identity.default.domain
 }
 
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ses_email_identity
-resource "aws_ses_email_identity" "default" {
-  email = "noreply@${var.dns_record_prefix}.${var.cloudflare_zone}"
-  depends_on = [
-    cloudflare_dns_record.ses_verification
-  ]
-}
-
 # --------------------
 # AWS IAM user
 # --------------------
