@@ -40,9 +40,9 @@ output "ses_access_key_id" {
   sensitive   = true
 }
 
-output "ses_secret_access_key" {
+output "ses_smtp_password_v4" {
   description = "It should be assigned to SMTP_PASSWORD in .env"
-  value       = module.aws_ses.ses_secret_access_key
+  value       = module.aws_ses.ses_smtp_password_v4
   sensitive   = true
 }
 
