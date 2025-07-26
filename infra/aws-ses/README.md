@@ -22,3 +22,12 @@ the *sandbox* mode by default, with many restrictions (e.g. 200 emails per
 To move out of the sandbox, you must *request production access* from AWS. This
 grants full access to SES features for sending emails to any recipient.
 Go to the AWS SES Console to send a request.
+
+## Testing
+
+Once the AWS SES identity has been set up, it's recommended to test it
+independently (see [send-email.sh](../../scripts/send-email.sh)):
+
+```sh
+sh ./scripts/send-email.sh
+```
