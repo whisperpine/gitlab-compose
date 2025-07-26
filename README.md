@@ -1,5 +1,11 @@
 # GitLab Docker Compose
 
+[![GitLab](https://img.shields.io/badge/GitLab-%23FC6D26?logo=gitlab&logoColor=white)](https://about.gitlab.com/)
+[![GitHub License](https://img.shields.io/github/license/whisperpine/gitlab-compose)](https://github.com/whisperpine/gitlab-compose/blob/main/LICENSE)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/whisperpine/gitlab-compose/checks.yml?logo=github&label=checks)](https://github.com/whisperpine/gitlab-compose/actions/workflows/checks.yml)
+[![GitHub deployments](https://img.shields.io/github/deployments/whisperpine/gitlab-compose/infra-default?label=deployment&&logo=github)](https://github.com/whisperpine/gitlab-compose/deployments/infra-default)
+[![GitHub Release](https://img.shields.io/github/v/release/whisperpine/gitlab-compose?logo=github)](https://github.com/whisperpine/gitlab-compose/releases)
+
 Self-host [GitLab](https://about.gitlab.com/) in your office and access it everywhere.
 
 If you want to self-host GitLab in your office or on-premise data center, and
