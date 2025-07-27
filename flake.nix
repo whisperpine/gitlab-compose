@@ -26,6 +26,7 @@
               opentofu # infrastructure as code
               sops # simple tool for managing secrets
               git-cliff # changelog generator
+              trivy # scan security issues
             ];
           };
         }
