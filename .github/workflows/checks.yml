@@ -43,3 +43,52 @@ jobs:
         run: |
           tofu init
           tofu validate
+
+  trivy-fs:
+    name: use trivy to scan files
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@0.32.0
+        with:
+          scan-type: fs
+          severity: CRITICAL,HIGH,MEDIUM
+          skip-dirs: ./target
+          output: trivy-results.sarif
+          format: sarif
+          hide-progress: true
+          ignore-unfixed: true
+          exit-code: 1
+      - name: Upload Trivy scan results to GitHub Security tab
+        if: ${{ success() || failure() }}
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-fs-scan
+
+  trivy-config:
+    name: use trivy to scan configs
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@0.32.0
+        with:
+          scan-type: config
+          severity: CRITICAL,HIGH,MEDIUM
+          output: trivy-results.sarif
+          format: sarif
+          hide-progress: true
+          ignore-unfixed: true
+          exit-code: 1
+      - name: Upload Trivy scan results to GitHub Security tab
+        if: ${{ success() || failure() }}
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy-config-scan
