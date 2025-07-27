@@ -45,6 +45,19 @@ flowchart LR
 - Setup docker macvlan network by [./scripts/setup-network.sh](./scripts/setup-network.sh).
 - Run `docker compose up -d` to spin up services.
 
+## Cloud Services
+
+While it's easy to spin up a standalone GitLab instance via docker compose, it's
+essential to manage dependent cloud services properly, to make it
+production-ready. These services are managed by OpenTofu in this repo.
+
+- [AWS S3](https://aws.amazon.com/s3/):
+  provides an S3 bucket used by GitLab to periodically upload backups.
+- [AWS SES](https://aws.amazon.com/ses/):
+  provides an SMTP server which is used by GitLab to send emails.
+- [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/):
+  provides a secure way to host without a public IP address.
+
 ## File Notes
 
 - [gitlab.rb](./gitlab.rb) is duplicated from */opt/gitlab/etc/gitlab.rb.template*
@@ -54,13 +67,6 @@ flowchart LR
   [macvlan](https://docs.docker.com/network/drivers/macvlan/) driver type.
 - [example.env](./example.env) is a template which is expected to be copied as
 the `.env` file and edited further.
-
-## Cloudflare Tunnels
-
-[Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
-provides a secure way to host without a public IP address.
-It's recommended to set up infrastructures like Cloudflare Tunnel by [Terraform](https://www.terraform.io/).
-Read more in [infra/README.md](./infra/README.md).
 
 ## Feature Flags
 
