@@ -1,0 +1,25 @@
+# ------------------------------------------------
+# trivy config
+# ------------------------------------------------
+
+# LOW: One or more policies are attached directly to a user
+# See https://avd.aquasec.com/misconfig/avd-aws-0143
+AVD-AWS-0143
+
+# LOW: Bucket has logging disabled
+# Ensures S3 bucket logging is enabled for S3 buckets
+# See https://avd.aquasec.com/misconfig/s3-bucket-logging
+AVD-AWS-0089
+
+# MEDIUM: Bucket does not have versioning enabled
+# See https://avd.aquasec.com/misconfig/avd-aws-0090
+AVD-AWS-0090
+
+# HIGH: Bucket does not have encryption enabled
+# S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.
+# See https://avd.aquasec.com/misconfig/avd-aws-0088
+AVD-AWS-0088
+
+# HIGH: Bucket does not encrypt data with a customer managed key.
+# See https://avd.aquasec.com/misconfig/avd-aws-0132
+AVD-AWS-0132
