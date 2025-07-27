@@ -1,4 +1,4 @@
-name: Check by linters
+name: Checks
 
 on:
   pull_request:
