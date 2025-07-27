@@ -2,7 +2,7 @@
 
 # Purpose: send an email via SMTP (testing AWS SES)
 # Usage: sh ./scripts/send-email.sh
-# Dependencies: git
+# Dependencies: git, curl
 # Date: 2025-07-27
 # Author: Yusong
 
