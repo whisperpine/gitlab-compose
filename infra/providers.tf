@@ -12,6 +12,7 @@ terraform {
     skip_requesting_account_id  = true
     skip_s3_checksum            = true
     use_path_style              = true
+    use_lockfile                = true
   }
 
   # version constraints docs:
