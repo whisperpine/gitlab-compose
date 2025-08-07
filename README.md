@@ -37,6 +37,26 @@ flowchart LR
   classDef red_stroke stroke: #f66
 ```
 
+## Background
+
+When developing game projects with large binary files (e.g., textures, audio
+clips) ranging from several to tens of GBs, [Git LFS](https://git-lfs.com/) is
+the ideal solution for tracking these files. Our team heavily relied on CI/CD
+pipelines, which generated significant network traffic between the repository
+and CI runner. These pipelines also required computational resources due to long
+compile times, making a self-hosted CI runner on a powerful device preferable.
+Therefore hosting both the Git server and CI runner within the same subnet
+reduces network latency and financial costs.
+
+Using GitHub was not ideal due to expensive LFS storage and outbound bandwidth
+(refer to [GitHub LFS Pricing](https://docs.github.com/en/billing/concepts/product-billing/git-lfs)),
+as well as prolonged CI/CD times caused by cloning repositories to a device with
+a self-hosted GitHub runner.
+
+To address this, I came up with this solution: a self-hosted GitLab server and
+GitLab runner in our office, within the same subnet, while maintaining global
+accessibility using Cloudflare Tunnels.
+
 ## Get Started
 
 - Setup infrastructure by [Terraform](<https://github.com/hashicorp/terraform>)
