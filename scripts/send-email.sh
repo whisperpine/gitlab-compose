@@ -14,12 +14,12 @@ project_root=$(git rev-parse --show-toplevel)
 email_content_file="$project_root/scripts/email.txt"
 
 if [ -e "$project_root/.env" ]; then
-    # Source env var in ".env" (create it if missing).
-    . "$project_root/.env"
+  # Source env var in ".env" (create it if missing).
+  . "$project_root/.env"
 else
-    echo "Error: '$project_root/.env' file doesn't exist."
-    echo "Copy from '$project_root/example.env' and modify it."
-    exit 1
+  echo "Error: '$project_root/.env' file doesn't exist."
+  echo "Copy from '$project_root/example.env' and modify it."
+  exit 1
 fi
 
 # Create email.txt and add text content.
@@ -34,11 +34,11 @@ EOF
 
 # Send email through AES SES (via "STARTTLS Port").
 curl -v --ssl \
-    --url "smtp://$SMTP_ADDRESS:587" \
-    --user "$SMTP_USER_NAME:$SMTP_PASSWORD" \
-    --mail-from "$GITLAB_EMAIL_FROM" \
-    --mail-rcpt "$TEST_EMAIL_RECIPIENT" \
-    --upload-file "$email_content_file"
+  --url "smtp://$SMTP_ADDRESS:587" \
+  --user "$SMTP_USER_NAME:$SMTP_PASSWORD" \
+  --mail-from "$GITLAB_EMAIL_FROM" \
+  --mail-rcpt "$TEST_EMAIL_RECIPIENT" \
+  --upload-file "$email_content_file"
 
 # # Send email through AES SES (via "TLS Wrapper Port").
 # curl -v \
