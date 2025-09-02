@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     name: check misspelling by typos
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: cachix/install-nix-action@v31
       - name: Run typos command
         shell: nix shell nixpkgs#typos --quiet --command bash {0}
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     name: lint opentofu code by tflint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: cachix/install-nix-action@v31
       - name: Run tflint command
         shell: nix shell nixpkgs#tflint --quiet --command bash {0}
@@ -33,7 +33,7 @@ jobs:
       run:
         working-directory: ./infra # Set working directory for apply job.
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: opentofu/setup-opentofu@v1
       - name: Run OpenTofu commands
         env:
@@ -50,7 +50,7 @@ jobs:
     permissions:
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@0.32.0
         with:
@@ -75,7 +75,7 @@ jobs:
     permissions:
       security-events: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@0.32.0
         with:
