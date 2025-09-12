@@ -1,3 +1,10 @@
 * text=auto eol=lf
 
+# Remove files under ./husky from repo statistics.
+.husky/** -linguist-detectable
+# Remove flake.nix from repo statistics.
+flake.nix -linguist-detectable
+# Remove .envrc from repo statistics.
+.envrc -linguist-detectable
+# Remove gitlab.rb from repo statistics.
 gitlab.rb -linguist-detectable
