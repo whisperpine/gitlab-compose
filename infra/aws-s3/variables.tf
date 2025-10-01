@@ -1,5 +1,5 @@
 variable "s3_bucket_region" {
-  description = "AWS region for S3 buccket"
+  description = "AWS region for S3 bucket"
   type        = string
 }
 
