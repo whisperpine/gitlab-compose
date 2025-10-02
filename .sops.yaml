@@ -1,4 +1,6 @@
 stores:
+  json:
+    indent: 2
   yaml:
     indent: 2
 keys:
