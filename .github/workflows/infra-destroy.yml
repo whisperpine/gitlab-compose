@@ -36,7 +36,7 @@ jobs:
         shell: nix shell nixpkgs#sops --quiet --command bash {0}
         run: sops encrypt --output tfplan-encrypted tfplan
       - name: Upload encrypted plan artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: tfplan-destroy-encrypted-${{ github.event.inputs.tf-workspace }}
           path: ${{ github.workspace }}/infra/tfplan-encrypted
@@ -54,7 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Download encrypted plan artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: tfplan-destroy-encrypted-${{ github.event.inputs.tf-workspace }}
           path: ${{ github.workspace }}/infra
