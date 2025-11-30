@@ -3,13 +3,13 @@ name: Create and Update Infrastructure
 on:
   pull_request:
     paths:
-      - infra
+      - infra/**
       - .github/workflows/infra-apply.yml
   push:
     branches:
       - main
     paths:
-      - infra
+      - infra/**
       - .github/workflows/infra-apply.yml
   workflow_dispatch:
     inputs:
