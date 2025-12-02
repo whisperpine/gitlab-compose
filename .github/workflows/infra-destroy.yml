@@ -17,7 +17,7 @@ jobs:
       run:
         working-directory: ./infra # Set working directory for apply job.
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: opentofu/setup-opentofu@v1
       - name: Run OpenTofu commands
         env:
@@ -52,7 +52,7 @@ jobs:
       run:
         working-directory: ./infra # Set working directory for apply job.
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Download encrypted plan artifact
         uses: actions/download-artifact@v6
         with:
