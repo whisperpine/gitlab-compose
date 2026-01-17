@@ -12,9 +12,9 @@ terraform {
   }
 }
 
-# --------------------
+# ------- #
 # AWS SES
-# --------------------
+# ------- #
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ses_domain_identity
 resource "aws_ses_domain_identity" "default" {
@@ -31,9 +31,9 @@ resource "aws_ses_domain_identity_verification" "default" {
   domain = aws_ses_domain_identity.default.domain
 }
 
-# --------------------
+# ------------ #
 # AWS IAM user
-# --------------------
+# ------------ #
 
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user
 resource "aws_iam_user" "ses_user" {
@@ -67,9 +67,9 @@ resource "aws_iam_access_key" "ses_user_key" {
   user = aws_iam_user.ses_user.name
 }
 
-# --------------------
+# -------------- #
 # Cloudflare DNS
-# --------------------
+# -------------- #
 
 # Cloudflare DNS TXT Record for SES Verification.
 resource "cloudflare_dns_record" "ses_verification" {

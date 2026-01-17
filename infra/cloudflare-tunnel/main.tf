@@ -8,21 +8,18 @@ terraform {
   }
 }
 
-# cloudflare_zero_trust_tunnel_cloudflared resource docs:
 # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/zero_trust_tunnel_cloudflared
 resource "cloudflare_zero_trust_tunnel_cloudflared" "default" {
   account_id = var.cloudflare_account_id
   name       = var.cloudflare_tunnel_name
 }
 
-# cloudflare_zero_trust_tunnel_cloudflared_token data docs:
 # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/data-sources/zero_trust_tunnel_cloudflared
 data "cloudflare_zero_trust_tunnel_cloudflared_token" "default" {
   account_id = var.cloudflare_account_id
   tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.default.id
 }
 
-# cloudflare_dns_record resource docs:
 # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/dns_record
 resource "cloudflare_dns_record" "gitlab" {
   zone_id = var.cloudflare_zone_id
@@ -34,7 +31,6 @@ resource "cloudflare_dns_record" "gitlab" {
   ttl     = 1 # setting to 1 means automatic
 }
 
-# cloudflare_dns_record resource docs:
 # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/dns_record
 resource "cloudflare_dns_record" "registry" {
   zone_id = var.cloudflare_zone_id
@@ -46,7 +42,6 @@ resource "cloudflare_dns_record" "registry" {
   ttl     = 1 # setting to 1 means automatic
 }
 
-# cloudflare_zero_trust_tunnel_cloudflared_config docs:
 # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/zero_trust_tunnel_cloudflared_config
 resource "cloudflare_zero_trust_tunnel_cloudflared_config" "default" {
   tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.default.id

@@ -4,7 +4,8 @@ output "ses_access_key_id" {
 }
 
 output "ses_smtp_password_v4" {
-  value = aws_iam_access_key.ses_user_key.ses_smtp_password_v4
+  value     = aws_iam_access_key.ses_user_key.ses_smtp_password_v4
+  sensitive = true
 }
 
 output "smtp_endpoint" {

@@ -8,6 +8,10 @@ terraform {
   }
 }
 
+# ------ #
+# AWS S3
+# ------ #
+
 # S3 Bucket.
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
 resource "aws_s3_bucket" "bucket" {
@@ -33,7 +37,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "default" {
     id     = "glacier-deep-archive_expire-after-180-days"
     status = "Enabled"
     filter {}
-    # Transition to DEEP_ARCHIVE after 1 day
+    # Transition to DEEP_ARCHIVE after 1 day.
     transition {
       days          = 1
       storage_class = "DEEP_ARCHIVE"
@@ -44,6 +48,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "default" {
     }
   }
 }
+
+# ------- #
+# AWS IAM
+# ------- #
 
 # IAM User.
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user
@@ -56,7 +64,6 @@ resource "aws_iam_user" "s3_user" {
 resource "aws_iam_policy" "s3_write_policy" {
   name        = "S3Write-${var.s3_bucket_name}"
   description = "Policy to allow write access to the specified S3 bucket"
-
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -77,7 +84,7 @@ resource "aws_iam_policy" "s3_write_policy" {
   })
 }
 
-# Attach Policy to IAM User.
+# Attach Policy to the IAM User.
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user_policy_attachment
 resource "aws_iam_user_policy_attachment" "s3_user_policy_attachment" {
   user       = aws_iam_user.s3_user.name
