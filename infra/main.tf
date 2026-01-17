@@ -1,30 +1,29 @@
-# sops_file data docs:
 # https://registry.terraform.io/providers/carlpett/sops/latest/docs/data-sources/file
 data "sops_file" "default" {
   source_file = "encrypted.${terraform.workspace}.json"
 }
 
 locals {
-  # tags for hashicorp/aws provider
+  # Tags for hashicorp/aws provider.
   repository = "gitlab-compose"
   default_tags = {
     tf-workspace  = terraform.workspace
     tf-repository = local.repository
   }
-  # provider: cloudflare/cloudflare 
+  # Provider: cloudflare/cloudflare.
   cloudflare_token = data.sops_file.default.data["cloudflare_token"]
-  # provider: hashicorp/aws 
+  # Provider: hashicorp/aws.
   aws_provider_region   = data.sops_file.default.data["aws_provider_region"]
   aws_access_key_id     = data.sops_file.default.data["aws_access_key_id"]
   aws_secret_access_key = data.sops_file.default.data["aws_secret_access_key"]
-  # module: cloudflare_tunnel
+  # Module: cloudflare_tunnel.
   cloudflare_zone            = data.sops_file.default.data["cloudflare_zone"]
   cloudflare_zone_id         = data.sops_file.default.data["cloudflare_zone_id"]
   cloudflare_account_id      = data.sops_file.default.data["cloudflare_account_id"]
   cloudflare_tunnel_name     = data.sops_file.default.data["cloudflare_tunnel_name"]
   dns_record_prefix_gitlab   = data.sops_file.default.data["dns_record_prefix_gitlab"]
   dns_record_prefix_registry = data.sops_file.default.data["dns_record_prefix_registry"]
-  # module: aws_s3
+  # Module: aws_s3.
   s3_bucket_name = data.sops_file.default.data["s3_bucket_name"]
 }
 

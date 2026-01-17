@@ -1,6 +1,6 @@
-# --------------------
+# ------------------------- #
 # module: cloudflare_tunnel
-# --------------------
+# ------------------------- #
 
 output "tunnel_token" {
   description = "Cloudflare Tunnel token, which should be assigned to CLOUDFLARED_TOKEN in .env"
@@ -8,9 +8,9 @@ output "tunnel_token" {
   sensitive   = true
 }
 
-# --------------------
+# -------------- #
 # module: aws_s3
-# --------------------
+# -------------- #
 
 output "s3_bucket_name" {
   description = "It should be assigned to BACKUP_UPLOAD_REMOTE_DIRECTORY in .env"
@@ -30,9 +30,9 @@ output "s3_secret_access_key" {
   sensitive   = true
 }
 
-# --------------------
+# --------------- #
 # module: aws_ses
-# --------------------
+# --------------- #
 
 output "ses_access_key_id" {
   description = "It should be assigned to SMTP_USER_NAME in .env"
