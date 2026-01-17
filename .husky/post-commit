@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Purpose: check conventional commits
+# Usage: make this script the git post-commit hook
+# Dependencies: cocogitto
+# Date: 2025-09-02
+# Author: Yusong
+
+set -e
+
+# Check the latest commit message.
+if ! cog check HEAD..HEAD >/dev/null 2>&1; then
+  echo "Error: Commit message violates conventional commits."
+  cog check HEAD..HEAD
+  exit 1
+fi
