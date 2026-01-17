@@ -25,6 +25,7 @@
             packages = with pkgs; [
               opentofu # infrastructure as code
               sops # simple tool for managing secrets
+              cocogitto # conventional commit toolkit
               git-cliff # changelog generator
               trivy # scan security issues
             ];

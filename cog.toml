@@ -1,0 +1,17 @@
+tag_prefix = "v"
+
+scopes = ["deps", "infra"]
+
+[commit_types]
+fix = { changelog_title = "Bug Fixes" }
+feat = { changelog_title = "Features" }
+docs = { changelog_title = "Documentation" }
+chore = { changelog_title = "Miscellaneous" }
+refactor = { changelog_title = "Refactor" }
+revert = { changelog_title = "Revert" }
+perf = { changelog_title = "Performance" }
+test = { changelog_title = "Testing" }
+ci = { changelog_title = "CI/CD" }
+# disabled types
+build = {}
+style = {}
