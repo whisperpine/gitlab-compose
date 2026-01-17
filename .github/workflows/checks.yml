@@ -50,6 +50,24 @@ jobs:
       - name: Run OpenTofu commands
         run: tofu fmt -check -diff -recursive
 
+  tofu-test:
+    runs-on: ubuntu-latest
+    name: tofu test
+    defaults:
+      run:
+        working-directory: ./infra
+    steps:
+      - uses: actions/checkout@v6
+      - uses: opentofu/setup-opentofu@v1
+      - name: Run OpenTofu commands
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+        run: |
+          tofu init
+          tofu test
+
   trivy-fs:
     name: use trivy to scan files
     runs-on: ubuntu-latest
