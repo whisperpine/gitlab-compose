@@ -1,6 +1,6 @@
-# ------------------------------------------------
+# ------------ #
 # trivy config
-# ------------------------------------------------
+# ------------ #
 
 # LOW: One or more policies are attached directly to a user
 # See https://avd.aquasec.com/misconfig/avd-aws-0143
