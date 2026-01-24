@@ -1,7 +1,7 @@
 * text=auto eol=lf
 
-# Remove files under ./husky from repo statistics.
-.husky/** -linguist-detectable
+# Remove commit-msg hook from repo statistics.
+scripts/commit-msg.sh -linguist-detectable
 # Remove flake.nix from repo statistics.
 flake.nix -linguist-detectable
 # Remove .envrc from repo statistics.
