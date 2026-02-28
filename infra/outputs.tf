@@ -8,6 +8,12 @@ output "tunnel_token" {
   sensitive   = true
 }
 
+output "tunnel_dns_records" {
+  description = "The DNS records of published application routes"
+  value       = module.cloudflare_tunnel.tunnel_dns_records
+  sensitive   = true
+}
+
 # -------------- #
 # module: aws_s3
 # -------------- #
