@@ -44,16 +44,25 @@ services:
         go-crond "/etc/cron.d/backup-cron" &
       # Override "/etc/gitlab/gitlab.rb".
       GITLAB_OMNIBUS_CONFIG: |
+        # ----------- #
+        # url configs
+        # ----------- #
         external_url '${EXTERNAL_URL}'
         registry_external_url '${REGISTRY_EXTERNAL_URL}'
 
-        ## Disable prometheus to reduce memory usage.
+        # ------------- #
+        # uncategrozied
+        # ------------- #
+        ## Disables prometheus to reduce memory usage.
         prometheus_monitoring['enable'] = false
-
-        ## Disable the following features when create a new repository.
+        ## Disables the following features when creating a new repository.
         gitlab_rails['gitlab_default_projects_features_snippets'] = false
+        ## Disables product usage data (only works upon installation).
+        gitlab_rails['initial_gitlab_product_usage_data'] = false
 
-        ### Email configs.
+        # ------------- #
+        # email configs
+        # ------------- #
         gitlab_rails['smtp_enable'] = true
         gitlab_rails['smtp_address'] = '${SMTP_ADDRESS}'
         gitlab_rails['smtp_port'] = 587
@@ -64,7 +73,9 @@ services:
         gitlab_rails['gitlab_email_display_name'] = 'GitLab'
         gitlab_rails['gitlab_email_reply_to'] = '${GITLAB_EMAIL_REPLY_TO}'
 
-        ### Backup Configs.
+        # -------------- #
+        # backup configs
+        # -------------- #
         ## The duration in seconds to keep backups.
         ## 604800 is meant to be 30 days.
         gitlab_rails['backup_keep_time'] = 2592000
