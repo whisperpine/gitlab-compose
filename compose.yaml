@@ -23,7 +23,6 @@ services:
 
   gitlab:
     image: gitlab/gitlab-ee:18.9.1-ee.0
-    container_name: gitlab
     restart: always
     shm_size: 256m
     volumes:
