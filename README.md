@@ -62,7 +62,7 @@ accessibility using Cloudflare Tunnels.
 - Setup infrastructure by [Terraform](<https://github.com/hashicorp/terraform>)
   or [OpenTofu](https://github.com/opentofu/opentofu) (see [infra/README.md](./infra/README.md)).
 - Config environment variables in `.env` file (refer to [example.env](./example.env)).
-- Setup docker macvlan network by [./scripts/setup-network.sh](./scripts/setup-network.sh).
+- Setup docker ipvlan network by [./scripts/setup-network.sh](./scripts/setup-network.sh).
 - Run `docker compose up -d` to spin up services.
 
 ## Cloud Services
@@ -84,7 +84,7 @@ production-ready. These services are managed by OpenTofu in this repo.
 (version v18.1.2-ee), as a handy reference.
 - [setup-network.sh](./scripts/setup-network.sh) demonstrates how to create a
   docker network with the
-  [macvlan](https://docs.docker.com/network/drivers/macvlan/) driver type.
+  [ipvlan](https://docs.docker.com/engine/network/drivers/ipvlan/) driver type.
 - [example.env](./example.env) is a template which is expected to be copied as
 the `.env` file and edited further.
 

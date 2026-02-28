@@ -1,8 +1,8 @@
 networks:
   cloudflared:
-  macvlan:
-    driver: macvlan
-    name: ${MACVLAN_NETWORK_NAME}
+  ipvlan:
+    driver: ipvlan
+    name: ${IPVLAN_NETWORK_NAME}
     external: true
 
 volumes:
@@ -30,12 +30,13 @@ services:
       - /etc/localtime:/etc/localtime:ro
       # Cron file used to backup gitlab periodically.
       - ./backup-cron:/etc/cron.d/backup-cron:ro
+      # Persistent docker volumes mapping gitlab paths.
       - gitlab-config:/etc/gitlab
       - gitlab-logs:/var/log/gitlab
       - gitlab-data:/var/opt/gitlab
     networks:
       cloudflared:
-      macvlan:
+      ipvlan:
         ipv4_address: ${GITLAB_IPV4_ADDRESS}
     environment:
       # The script in GITLAB_POST_RECONFIGURE_SCRIPT is auto executed on startup.
