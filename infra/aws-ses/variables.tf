@@ -17,7 +17,7 @@ variable "dns_record_prefix" {
 }
 
 variable "cloudflare_zone" {
-  description = "Zone ID for your domain"
+  description = "Zone is the domain (e.g. example.com)"
   type        = string
   validation {
     condition = (

@@ -23,7 +23,7 @@ data "cloudflare_zero_trust_tunnel_cloudflared_token" "default" {
 # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/dns_record
 resource "cloudflare_dns_record" "gitlab" {
   zone_id = var.cloudflare_zone_id
-  name    = var.dns_record_prefix_gitlab
+  name    = "${var.dns_record_prefix_gitlab}.${var.cloudflare_zone}"
   content = "${cloudflare_zero_trust_tunnel_cloudflared.default.id}.cfargotunnel.com"
   comment = "gitlab main site"
   type    = "CNAME"
@@ -34,7 +34,7 @@ resource "cloudflare_dns_record" "gitlab" {
 # https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/dns_record
 resource "cloudflare_dns_record" "registry" {
   zone_id = var.cloudflare_zone_id
-  name    = var.dns_record_prefix_registry
+  name    = "${var.dns_record_prefix_registry}.${var.cloudflare_zone}"
   content = "${cloudflare_zero_trust_tunnel_cloudflared.default.id}.cfargotunnel.com"
   comment = "gitlab container registry"
   type    = "CNAME"
@@ -49,14 +49,14 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "default" {
   config = {
     ingress = [
       {
-        hostname = "${cloudflare_dns_record.gitlab.name}.${var.cloudflare_zone}"
+        hostname = cloudflare_dns_record.gitlab.name
         service  = "https://gitlab"
         origin_request = {
           no_tls_verify = true
         }
       },
       {
-        hostname = "${cloudflare_dns_record.registry.name}.${var.cloudflare_zone}"
+        hostname = cloudflare_dns_record.registry.name
         service  = "https://gitlab"
         origin_request = {
           no_tls_verify = true
