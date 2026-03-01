@@ -38,6 +38,10 @@ services:
       cloudflared:
       ipvlan:
         ipv4_address: ${GITLAB_IPV4_ADDRESS}
+    deploy:
+      resources:
+        limits:
+          memory: 8g
     environment:
       # The script in GITLAB_POST_RECONFIGURE_SCRIPT is auto executed on startup.
       GITLAB_POST_RECONFIGURE_SCRIPT: |
