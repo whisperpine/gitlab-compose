@@ -9,7 +9,7 @@
 set -e
 
 if ! lsmod | grep -q ipvlan; then
-  echo "Error: cannot find the 'ipvlan' kernel module."
+  echo "Error: Cannot find the 'ipvlan' kernel module."
   exit 1
 fi
 
