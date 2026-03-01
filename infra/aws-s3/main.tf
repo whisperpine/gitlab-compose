@@ -19,6 +19,15 @@ resource "aws_s3_bucket" "bucket" {
   region = var.s3_bucket_region
 }
 
+# Enable bucket versioning.
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning
+resource "aws_s3_bucket_versioning" "bucket" {
+  bucket = aws_s3_bucket.bucket.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 # Block public access for the S3 bucket.
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block
 resource "aws_s3_bucket_public_access_block" "bucket" {
