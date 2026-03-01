@@ -28,6 +28,12 @@ resource "aws_s3_bucket_versioning" "bucket" {
   }
 }
 
+# Enable object lock.
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_object_lock_configuration
+resource "aws_s3_bucket_object_lock_configuration" "bucket" {
+  bucket = aws_s3_bucket.bucket.id
+}
+
 # Block public access for the S3 bucket.
 # https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block
 resource "aws_s3_bucket_public_access_block" "bucket" {
