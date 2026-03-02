@@ -68,51 +68,38 @@ jobs:
           tofu init
           tofu test
 
-  trivy-fs:
+  trivy-scan:
     name: use trivy to scan files
     runs-on: ubuntu-latest
     permissions:
       security-events: write
     steps:
       - uses: actions/checkout@v6
+      - uses: cachix/install-nix-action@v31
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          scan-type: fs
-          severity: CRITICAL,HIGH,MEDIUM
-          skip-dirs: ./target
-          output: trivy-results.sarif
-          format: sarif
-          hide-progress: true
-          ignore-unfixed: true
-          exit-code: 1
-      - name: Upload Trivy scan results to GitHub Security tab
+        shell: nix shell nixpkgs#trivy --quiet --command bash {0}
+        run: |
+          trivy --quiet fs . \
+            --output trivy-fs-results.sarif \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --skip-dirs ./target \
+            --format sarif \
+            --exit-code 1
+          trivy --quiet config . \
+            --output trivy-config-results.sarif \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --skip-dirs ./target \
+            --format sarif \
+            --exit-code 1
+      - name: Upload "trivy fs" results to GitHub Security tab
         if: ${{ success() || failure() }}
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: trivy-results.sarif
+          sarif_file: trivy-fs-results.sarif
           category: trivy-fs-scan
-
-  trivy-config:
-    name: use trivy to scan configs
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-    steps:
-      - uses: actions/checkout@v6
-      - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          scan-type: config
-          severity: CRITICAL,HIGH,MEDIUM
-          output: trivy-results.sarif
-          format: sarif
-          hide-progress: true
-          ignore-unfixed: true
-          exit-code: 1
-      - name: Upload Trivy scan results to GitHub Security tab
+      - name: Upload "trivy config" results to GitHub Security tab
         if: ${{ success() || failure() }}
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: trivy-results.sarif
+          sarif_file: trivy-config-results.sarif
           category: trivy-config-scan
