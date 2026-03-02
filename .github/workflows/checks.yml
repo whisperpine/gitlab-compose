@@ -82,13 +82,11 @@ jobs:
           trivy --quiet fs . \
             --output trivy-fs-results.sarif \
             --severity CRITICAL,HIGH,MEDIUM \
-            --skip-dirs ./target \
             --format sarif \
             --exit-code 1
           trivy --quiet config . \
             --output trivy-config-results.sarif \
             --severity CRITICAL,HIGH,MEDIUM \
-            --skip-dirs ./target \
             --format sarif \
             --exit-code 1
       - name: Upload "trivy fs" results to GitHub Security tab
