@@ -107,12 +107,12 @@ resource "cloudflare_dns_record" "ses_spf" {
   ttl     = 1
 }
 
-# Cloudflare DNS for DMARC
+# Cloudflare DNS for DMARC.
 resource "cloudflare_dns_record" "ses_dmarc" {
   comment = "${aws_ses_domain_identity.default.domain} DMARC for AWS SES"
   zone_id = var.cloudflare_zone_id
   name    = "_dmarc.${var.dns_record_prefix}"
-  content = "\"v=DMARC1; p=quarantine; adkim=s; aspf=s;\""
+  content = "\"v=DMARC1; p=quarantine; rua=mailto:b172b76cac8044febbd56db6f798630a@dmarc-reports.cloudflare.net\""
   type    = "TXT"
   proxied = false
   ttl     = 1
