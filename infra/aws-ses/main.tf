@@ -31,6 +31,12 @@ resource "aws_ses_domain_identity_verification" "default" {
   domain = aws_ses_domain_identity.default.domain
 }
 
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ses_domain_mail_from
+resource "aws_ses_domain_mail_from" "default" {
+  domain           = aws_ses_domain_identity.default.domain
+  mail_from_domain = "bounce.${aws_ses_domain_identity.default.domain}"
+}
+
 # ------------ #
 # AWS IAM user
 # ------------ #
@@ -75,7 +81,7 @@ resource "aws_iam_access_key" "ses_user_key" {
 resource "cloudflare_dns_record" "ses_verification" {
   comment = "${aws_ses_domain_identity.default.domain} for AWS SES Verification"
   zone_id = var.cloudflare_zone_id
-  name    = "_amazonses.${var.dns_record_prefix}"
+  name    = "_amazonses.${var.dns_record_prefix}.${var.cloudflare_zone}"
   content = "\"${aws_ses_domain_identity.default.verification_token}\""
   type    = "TXT"
   proxied = false
@@ -87,7 +93,7 @@ resource "cloudflare_dns_record" "ses_dkim" {
   count   = 3
   comment = "${aws_ses_domain_identity.default.domain} DKIM for AWS SES"
   zone_id = var.cloudflare_zone_id
-  name    = "${element(aws_ses_domain_dkim.default.dkim_tokens, count.index)}._domainkey.${var.dns_record_prefix}"
+  name    = "${element(aws_ses_domain_dkim.default.dkim_tokens, count.index)}._domainkey.${var.dns_record_prefix}.${var.cloudflare_zone}"
   content = "${element(aws_ses_domain_dkim.default.dkim_tokens, count.index)}.dkim.amazonses.com"
   type    = "CNAME"
   proxied = false
@@ -98,7 +104,7 @@ resource "cloudflare_dns_record" "ses_dkim" {
 resource "cloudflare_dns_record" "ses_spf" {
   comment = "${aws_ses_domain_identity.default.domain} SPF for AWS SES"
   zone_id = var.cloudflare_zone_id
-  name    = var.dns_record_prefix
+  name    = "${var.dns_record_prefix}.${var.cloudflare_zone}"
   # "include:_spf.mx.cloudflare.net" is for cloudflare email routing.
   # "include:amazonses.com" is for aws ses.
   content = "\"v=spf1 include:_spf.mx.cloudflare.net include:amazonses.com ~all\""
@@ -111,9 +117,32 @@ resource "cloudflare_dns_record" "ses_spf" {
 resource "cloudflare_dns_record" "ses_dmarc" {
   comment = "${aws_ses_domain_identity.default.domain} DMARC for AWS SES"
   zone_id = var.cloudflare_zone_id
-  name    = "_dmarc.${var.dns_record_prefix}"
+  name    = "_dmarc.${var.dns_record_prefix}.${var.cloudflare_zone}"
   content = "\"v=DMARC1; p=quarantine; rua=mailto:b172b76cac8044febbd56db6f798630a@dmarc-reports.cloudflare.net\""
   type    = "TXT"
   proxied = false
   ttl     = 1
+}
+
+# Cloudflare DNS TXT Record for SPF (MAIL FROM).
+resource "cloudflare_dns_record" "ses_mail_from_spf" {
+  comment = "${aws_ses_domain_identity.default.domain} SPF for AWS SES"
+  zone_id = var.cloudflare_zone_id
+  name    = aws_ses_domain_mail_from.default.mail_from_domain
+  content = "\"v=spf1 include:amazonses.com ~all\""
+  type    = "TXT"
+  proxied = false
+  ttl     = 1
+}
+
+# Cloudflare DNS for the custom MAIL FROM.
+resource "cloudflare_dns_record" "ses_mail_from" {
+  comment  = "${aws_ses_domain_identity.default.domain} MX record for AWS SES"
+  zone_id  = var.cloudflare_zone_id
+  name     = aws_ses_domain_mail_from.default.mail_from_domain
+  content  = "feedback-smtp.${aws_ses_domain_identity.default.region}.amazonses.com"
+  priority = 10
+  type     = "MX"
+  proxied  = false
+  ttl      = 1
 }
