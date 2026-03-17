@@ -21,3 +21,7 @@ creation_rules:
     key_groups:
       - age:
           - *yusong
+  - path_regex: ^encrypted\.backup\.env$
+    key_groups:
+      - age:
+          - *yusong
