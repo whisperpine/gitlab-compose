@@ -1,3 +1,30 @@
-/.env
-/.direnv
 email.txt
+
+# Direnv
+/.direnv
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*~
+*.bak
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
