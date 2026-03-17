@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", ":semanticCommitTypeAll(chore)"],
-  "schedule": ["* * 2 * *"],
+  "schedule": ["* * 2 */3 *"],
   "baseBranchPatterns": ["main"],
   "dependencyDashboard": false,
   "semanticCommits": "enabled",
@@ -12,6 +12,6 @@
   "automerge": false,
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["* * 2 * *"]
+    "schedule": ["* * 2 */3 *"]
   }
 }
