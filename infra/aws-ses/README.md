@@ -4,9 +4,9 @@ Create AWS SES identities and configure DNS records on Cloudflare.
 
 ## Prerequisites
 
-- An AWS IAM user with permissions to manage SES (e.g. predefined policy `AmazonSESFullAccess`).
-- A domain hosted by Cloudflare DNS (so that DNS records could be managed
-  by terraform).
+- An AWS IAM user with permissions to manage SES and IAM (e.g. predefined policy
+  `AmazonSESFullAccess` and `IAMFullAccess`).
+- A domain hosted by Cloudflare DNS (so that DNS records could be managed by terraform).
 - A Cloudflare API Token with proper permissions:
 
 | Permission type | Permission | Access level |
