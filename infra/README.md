@@ -1,6 +1,6 @@
 # Infrastructure as Code
 
-Setup Cloudflare Tunnel by
+Setup cloud infrastructure by
 [Terraform](https://github.com/hashicorp/terraform)
 or [OpenTofu](https://github.com/opentofu/opentofu)
 (which can be used interchangeably at the moment).
