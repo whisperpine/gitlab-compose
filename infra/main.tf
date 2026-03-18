@@ -56,7 +56,7 @@ module "aws_s3" {
 # Create AWS SES identities and configure DNS records on Cloudflare.
 module "aws_ses" {
   source             = "./aws-ses"
-  ses_user_name      = "gitlab-ses-sender-iam"
+  ses_user_name      = "${local.repository}-ses-sender"
   dns_record_prefix  = local.dns_record_prefix_gitlab
   cloudflare_zone    = local.cloudflare_zone
   cloudflare_zone_id = local.cloudflare_zone_id

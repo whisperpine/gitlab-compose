@@ -52,13 +52,13 @@ output "ses_smtp_password_v4" {
   sensitive   = true
 }
 
-output "smtp_endpoint" {
+output "ses_smtp_endpoint" {
   description = "It should be assigned to SMTP_ADDRESS in .env"
   value       = module.aws_ses.smtp_endpoint
 }
 
-output "smtp_domain" {
+output "ses_identity_domain" {
   description = "It should be assigned to SMTP_DOMAIN in .env"
-  value       = module.aws_ses.smtp_domain
+  value       = module.aws_ses.identity_domain
   sensitive   = true
 }

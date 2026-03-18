@@ -12,6 +12,6 @@ output "smtp_endpoint" {
   value = "email-smtp.${aws_ses_domain_identity.default.region}.amazonaws.com"
 }
 
-output "smtp_domain" {
+output "identity_domain" {
   value = aws_ses_domain_identity.default.domain
 }
