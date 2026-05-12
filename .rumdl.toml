@@ -1,0 +1,21 @@
+# -------------- #
+# global configs
+# -------------- #
+
+[global]
+# List of rules to enable exclusively (replaces defaults).
+enable = ["ALL"]
+# Additional rules to disable on top of the disable list (additive)
+extend-disable = []
+# List of file/directory patterns to exclude from linting.
+exclude = []
+
+# ------------------ #
+# rule level configs
+# ------------------ #
+
+[MD013]
+code-blocks = false
+
+[MD060]
+style = "compact"
