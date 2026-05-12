@@ -28,6 +28,16 @@ jobs:
         shell: nix shell nixpkgs#cocogitto --quiet --command bash {0}
         run: cog check HEAD..HEAD
 
+  rumdl:
+    name: lint markdown by rumdl
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cachix/install-nix-action@v31
+      - name: Run rumdl command
+        shell: nix shell nixpkgs#rumdl --quiet --command bash {0}
+        run: rumdl check .
+
   tflint:
     runs-on: ubuntu-latest
     name: lint opentofu code by tflint
