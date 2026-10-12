@@ -44,7 +44,7 @@ clips) ranging from several to tens of GBs, [Git LFS](https://git-lfs.com/) is
 the ideal solution for tracking these files. Our team heavily relied on CI/CD
 pipelines, which generated significant network traffic between the repository
 and CI runner. These pipelines also required computational resources due to long
-compile times, making a self-hosted CI runner on a powerful device preferable.
+compile time, making a self-hosted CI runner on a powerful device preferable.
 Therefore hosting both the Git server and CI runner within the same subnet
 reduces network latency and financial costs.
 
