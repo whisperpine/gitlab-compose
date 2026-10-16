@@ -8,9 +8,9 @@
 
 Self-host [GitLab](https://about.gitlab.com/) in your office and access it everywhere.
 
-If you want to self-host GitLab in your office or on-premise data center, and
-access from anywhere, with zero cloud cost, you come to the right place. While
-this repository is tailored for my use cases, it may help you get started.
+If you want to self-host GitLab on-premise and access it anywhere, with zero
+cloud cost, you come to the right place. While this repository is tailored for
+my use cases, it may help you get started.
 
 ```mermaid
 flowchart LR
@@ -39,19 +39,19 @@ flowchart LR
 
 ## Background
 
-When developing game projects with large binary files (e.g., textures, audio
+When developing game projects with large binary files (e.g. textures, audio
 clips) ranging from several to tens of GBs, [Git LFS](https://git-lfs.com/) is
-the ideal solution for tracking these files. Our team heavily relied on CI/CD
-pipelines, which generated significant network traffic between the repository
-and CI runner. These pipelines also required computational resources due to long
-compile time, making a self-hosted CI runner on a powerful device preferable.
-Therefore hosting both the Git server and CI runner within the same subnet
-reduces network latency and financial costs.
+the ideal solution. Our team heavily relied on CI/CD pipelines, which generated
+significant network traffic between the repository and CI runner. These CI jobs
+also required computational resources due to long compile time, making a
+self-hosted CI runner on a powerful device preferable. Therefore hosting both
+the Git server and CI runner within the same subnet make CI much faster with
+zero financial costs.
 
 Using GitHub was not ideal due to expensive LFS storage and outbound bandwidth
-(refer to [GitHub LFS Pricing](https://docs.github.com/en/billing/concepts/product-billing/git-lfs)),
-as well as prolonged CI/CD times caused by cloning repositories to a device with
-a self-hosted GitHub runner.
+(See [GitHub LFS Pricing](https://docs.github.com/en/billing/concepts/product-billing/git-lfs)),
+as well as prolonged CI/CD times caused by git cloning to a device with a
+self-hosted GitHub runner.
 
 To address this, I came up with this solution: a self-hosted GitLab server and
 GitLab runner in our office, within the same subnet, while maintaining global
