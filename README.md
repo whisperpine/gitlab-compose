@@ -29,7 +29,7 @@ flowchart LR
     cloudflared --- gitlab
   end
 
-  private -...-> gitlab
+  private -..-> gitlab
 
   gitlab -.-|auto backup| s3
   gitlab -.-|email service| ses
