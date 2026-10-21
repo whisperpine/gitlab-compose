@@ -9,9 +9,5 @@
   "labels": ["renovate"],
   "rebaseWhen": "conflicted",
   "prHourlyLimit": 2,
-  "automerge": false,
-  "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": ["* * 2 */3 *"]
-  }
+  "automerge": false
 }
